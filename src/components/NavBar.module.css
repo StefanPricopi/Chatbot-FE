@@ -1,0 +1,23 @@
+.navBar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+  
+li {
+  display: inline-block;
+}
+
+li a {
+  display: block;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  transition: all 0.3s ease 0s;
+}
+
+li a:hover {
+  background-color: #1DA15E;
+  color: white;
+}

@@ -1,0 +1,123 @@
+.header {
+    padding: 20px 17%;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 65%;
+    background-color: #EAF9F4;
+}
+
+.headerContent {
+    display: flex;
+    align-items: center;
+}
+
+h1 {
+    font-size: 3rem;
+    margin-right: 20px;
+    white-space: normal;
+}
+
+.FAQCrud {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.headerImage {
+    max-width: 100%;
+    height: auto;
+}
+
+.editingContainer {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    min-height: 120px; 
+}
+
+.editingContainer input {
+    width: 100%;
+}
+
+
+.FAQList {
+    list-style: none;
+    padding: 0;
+}
+
+.faqItem {
+    margin: 1rem;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    border-radius: 5px;
+}
+
+.faqItem p {
+    margin: 0.5rem 0;
+}
+
+.button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1rem;
+    margin-right: 0.5rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.button:hover {
+    background-color: #45a049;
+}
+
+.input {
+    padding: 10px;
+    margin-bottom: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 30%;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+
+
+.footer {
+    margin-top: auto;
+    font-weight: bold;
+    padding: 20px;
+    text-align: center;
+    background-color: #1D1D1A;
+}
+
+.footer p {
+    color: white;
+}
+
+@media screen and (max-width: 768px) {
+    .headerContent {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .headerImage {
+        max-width: 100%;
+    }
+}
