@@ -1,0 +1,63 @@
+
+body {
+    margin: 0;
+    padding: 0;
+    background-image: url('C:\Users\alin1\Desktop\HHH\hustle-hack-harmony-fe\src\components\images\plain-black-background-02fh7564l8qq4m6d.jpg');
+    background-repeat: no-repeat; 
+    background-size: cover;
+    background-position: center; 
+    font-family: Arial, sans-serif; 
+  }
+  
+  .chatWindow {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    height: 400px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .toggleButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+  }
+  
+  .toggleButton img {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .messageDisplay {
+    height: 300px; 
+    overflow-y: auto;
+  }
+  
+  .messageInput {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+  }
+  
+  .inputField {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    outline: none;
+  }
+  
+  .sendButton {
+    margin-left: 10px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+  }
+  

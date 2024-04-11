@@ -11,6 +11,11 @@ export default function NavBar() {
         },
         {
             id: 2,
+            path: "/home",
+            text: "Home", 
+        },
+        {
+            id: 3,
             path: "/logs",
             text: "Logs"
         },
@@ -21,7 +26,7 @@ export default function NavBar() {
             <ul>
                 {links.map(link => (
                     <li key={link.id}>
-                        <NavLink to={link.path} className={link.className}>
+                        <NavLink to={link.path} className={styles.navLink}>
                             {link.text}
                         </NavLink>
                     </li>
