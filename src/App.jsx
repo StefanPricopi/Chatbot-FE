@@ -2,6 +2,8 @@ import React from 'react';
 import { useState } from 'react'
 import './App.css'
 import HomePage from './pages/HomePage'
+import LogsPage from './pages/Logs_Dash/LogsPage'
+
 import NavBar from './components/NavBar'
 import { Route, Routes, BrowserRouter as Router } from "react-router-dom";
 function App() {
@@ -12,6 +14,8 @@ function App() {
         <NavBar />
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/logs" element={<LogsPage />} />
+
         </Routes>
       </Router>
     </div>
