@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './ChatbotPage.module.css';
 import minimizeIcon from '../components/images/minimize-icon-3.png';
-import openIcon from '../components/images/icon-open-up.png'; 
+import openIcon from '../components/images/chat2.png'; 
 import style from "./ChatbotPage.module.css";
 
 function ChatbotPage() {
@@ -63,7 +63,7 @@ function ChatbotPage() {
         <div className={styles.chatWindow}>
 
           <div className={styles.chatWindow_top}>
-
+            {/* Could write some stuff here like chat id etc. */}
           </div>
 
           <div className={styles.toggleButton} onClick={toggleChat}>
@@ -109,7 +109,7 @@ function ChatbotPage() {
         </div>
       )}
       {!isChatOpen && (
-        <div className={styles.toggleButton} onClick={toggleChat}>
+        <div className={styles.toggleButtonClosed} onClick={toggleChat}>
           <img src={openIcon} alt="Open Chat" />
         </div>
       )}
