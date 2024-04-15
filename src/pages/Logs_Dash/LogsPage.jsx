@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import styles from './styling/LogsPage.module.css';
 import ChatlogItem from './components/Chatlog_item';
 import LogApi from '../../api/LogsApi';
+import Chatwindow from './components/Chatwindow';
 
 export default function LogsPage() {
 
@@ -48,9 +49,15 @@ export default function LogsPage() {
 
 
   return (
+    
     <div className={styles.container}>
+
             <section className={styles.main_section}>
     	        <h2 className={styles.title}>Chatlogs</h2>
+
+
+                <Chatwindow />
+
 
                 <div className={styles.log_section}>
                   {/* This is the main container of the different logs.. */}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styles from './ChatbotPage.module.css';
 import minimizeIcon from '../components/images/minimize-icon-3.png';
 import openIcon from '../components/images/icon-open-up.png'; 
+import style from "./ChatbotPage.module.css";
 
 function ChatbotPage() {
   const [isChatOpen, setIsChatOpen] = useState(true);
@@ -55,7 +56,9 @@ function ChatbotPage() {
   };
 
   return (
-    <>
+    <div>
+
+
       {isChatOpen && (
         <div className={styles.chatWindow}>
           <div className={styles.toggleButton} onClick={toggleChat}>
@@ -86,7 +89,7 @@ function ChatbotPage() {
           <img src={openIcon} alt="Open Chat" />
         </div>
       )}
-    </>
+    </div>
   );
 }
 

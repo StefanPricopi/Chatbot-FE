@@ -1,0 +1,42 @@
+.main_container 
+{
+    display: flex;
+    flex-direction: column;
+    height:100%;
+    width: 100%;
+    background-color: blue;
+}
+
+.logo 
+{
+    width: 11vw;
+    height: 4vh;
+    justify-self: center;
+}
+
+.top_bar 
+{
+    display: grid ;
+    height: 5vh;
+    background-color: none;
+    align-content: center;
+}
+
+.verkopen_btn 
+{
+    height: 4vh;
+    background-color: #010101;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    
+}
+
+.categories_btn 
+{
+    background: white;
+    border:none;
+    color: rgb(75, 75, 75);
+    height:4vh;
+    
+}

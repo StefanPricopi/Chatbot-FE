@@ -8,14 +8,9 @@ export default function NavBar() {
             id: 1,
             path: "/",
             text: "Main",
-        },
+        },  
         {
             id: 2,
-            path: "/home",
-            text: "Home", 
-        },
-        {
-            id: 3,
             path: "/logs",
             text: "Logs"
         },
