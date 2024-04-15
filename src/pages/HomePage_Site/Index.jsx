@@ -1,6 +1,6 @@
 import React from 'react'
 import style from './styling/HomePage.module.css'
-import ChatbotPage from '../ChatbotPage'
+import ChatbotPage from '../Chatbot/ChatbotPage'
 
 
 export default function () {

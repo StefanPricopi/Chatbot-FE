@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './ChatbotPage.module.css';
-import minimizeIcon from '../components/images/minimize-icon-3.png';
-import openIcon from '../components/images/chat2.png'; 
+import minimizeIcon from '../../components/images/minimize-icon-3.png';
+import openIcon from '../../components/images/chat2.png'; 
 import style from "./ChatbotPage.module.css";
 
 function ChatbotPage() {
