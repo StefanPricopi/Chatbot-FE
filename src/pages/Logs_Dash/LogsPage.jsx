@@ -3,11 +3,15 @@ import styles from './styling/LogsPage.module.css';
 import ChatlogItem from './components/Chatlog_item';
 import LogApi from '../../api/LogsApi';
 import Chatwindow from './components/Chatwindow';
+import NavBar from '../../components/NavBar'
+
 
 export default function LogsPage() {
 
   const [chatLogs, SetChatlogs] = useState([]);
   const [filteredLogs, SetFilteredLogs] = useState("all");
+  const [displayChat, SetDisplayChat] = useState(false);
+
 
   useEffect(() => {
     getAllLogs();
@@ -48,15 +52,28 @@ export default function LogsPage() {
   });
 
 
+  const showChat = (chat_id = 0) => 
+  {
+    //alert();
+    console.log(`Chat ${chat_id}`);
+    SetDisplayChat(true);
+
+    if(displayChat)
+    {
+      SetDisplayChat(false);
+    }
+  }
+
   return (
     
     <div className={styles.container}>
+            <NavBar />
 
             <section className={styles.main_section}>
     	        <h2 className={styles.title}>Chatlogs</h2>
 
 
-                <Chatwindow />
+                {displayChat && <Chatwindow displayChat={showChat}/>}
 
 
                 <div className={styles.log_section}>
@@ -78,7 +95,7 @@ export default function LogsPage() {
                   
                   <div className={styles.log_container}>
                     {filterLog.map((i) => (
-                      <ChatlogItem key={i.id} chatId={i.id} refreshList={() => {getAllLogs()}}/>
+                      <ChatlogItem key={i.id} chatId={i.id} refreshList={() => {getAllLogs()}} displayChat={showChat}/>
                     ))}
                   </div>
 

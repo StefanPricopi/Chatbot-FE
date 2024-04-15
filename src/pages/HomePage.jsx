@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import FAQApi from '../api/FAQApi';
 import styles from './HomePage.module.css';
+import NavBar from '../components/NavBar'
 
 export default function HomePage() {
     const [FAQs, setFAQs] = useState([]);
@@ -70,6 +71,7 @@ export default function HomePage() {
 
     return (
         <div className={styles.container}>
+            <NavBar />
             <header className={styles.header}>
                 <div className={styles.headerContent}>
                     <div>

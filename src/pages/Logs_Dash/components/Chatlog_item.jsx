@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import styles from '../styling/LogsPage.module.css';
 import LogApi from '../../../api/LogsApi';
 
-export default function ChatlogItem({chatId, refreshList}) {
+export default function ChatlogItem({chatId, refreshList, displayChat}) {
 
 
   const [chatInfo, SetChatInfo] = useState({});
@@ -61,7 +61,7 @@ export default function ChatlogItem({chatId, refreshList}) {
           <p>Customer - {chatInfo.customer_id}</p>
           <p className={chatInfo.hasBeenSolved ? styles.chatlog_solved : styles.chatlog_unsolved}>{chatInfo.hasBeenSolved ? "Solved" : "Unsolved"}</p>
           <p>Priority: <span className={chatInfo.highPrio ? styles.chatlog_prio_h : styles.chatlog_prio_l}>{chatInfo.highPrio ? "High" : "Low"} </span></p>
-          <button className={styles.chatlog_open_btn}>Open</button>
+          <button onClick={() => {displayChat(chatInfo.id)}} className={styles.chatlog_open_btn}>Open</button>
     </section>
   )
 }

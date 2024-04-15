@@ -2,7 +2,7 @@ import React from 'react'
 import styles from '../styling/Chatwindow.module.css'
 
 
-export default function Chatwindow() {
+export default function Chatwindow({displayChat}) {
   return (
     <div className={styles.chat_window}>
         {/* 
@@ -11,7 +11,7 @@ export default function Chatwindow() {
 
         */}
         
-        <div className={styles.close_chat_btn}>
+        <div onClick={displayChat()} className={styles.close_chat_btn}>
             {/* Close button */}
             X
         </div>

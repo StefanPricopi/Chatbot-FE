@@ -4,7 +4,7 @@
     top: 10vh;
     left:10vw;
 
-    display: none;
+    display: flex;
     flex-direction: column;
 
     width: 80vw; 
@@ -22,8 +22,8 @@
 {
     width: 100%; 
     height: 70vh; 
-    background-color: blue;
-
+    background-color: rgb(238, 238, 238);
+    
 }
 
 .sub_box 
