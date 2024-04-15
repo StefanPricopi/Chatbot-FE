@@ -9,7 +9,6 @@ function ChatbotPage() {
   const [chatHistory, setChatHistory] = useState([]);
 
   useEffect(() => {
-    // Send welcome message when component mounts
     sendWelcomeMessage();
   }, []);
 
@@ -18,7 +17,6 @@ function ChatbotPage() {
   };
 
   const sendWelcomeMessage = () => {
-    // Add the welcome message to chat history
     setChatHistory([
       ...chatHistory,
       { type: 'response', text: "Hey there! How can I help you today?" }
@@ -29,29 +27,74 @@ function ChatbotPage() {
     setMessage(event.target.value);
   };
 
+  function getChatbotResponse(message) {
+    const containsKeywords = {
+        invoice: ['invoice', 'send'],
+        resetPassword: ['reset', 'update', 'change', 'password'],
+        changePickupDate: ['change', 'pick-up']
+        // Add more cases as needed
+    };
+
+    // Check if message contains keywords related to sending invoice
+    if (containsKeywords.invoice.some(keyword => message.toLowerCase().includes(keyword))) {
+        return "You can send your invoice to the finance department at our main office.";
+    }
+
+    // Check if message contains keywords related to resetting password
+    if (containsKeywords.resetPassword.some(keyword => message.toLowerCase().includes(keyword))) {
+        return "To reset your password, please visit the 'Forgot Password' page on our website.";
+    }
+
+    // Check if message contains keywords related to changing pickup date
+    if (containsKeywords.changePickupDate.some(keyword => message.toLowerCase().includes(keyword))) {
+        return "Yes, you can change the pick-up date of your bid by contacting our customer support.";
+    }
+
+    // Add more cases here if needed
+
+    return "I'm sorry, I don't understand your question.";
+}
+
   const sendMessage = () => {
-    // Add user message to chat history
     setChatHistory([
       ...chatHistory,
       { type: 'user', text: message }
     ]);
-
-    // Clear the message input field
     setMessage('');
 
-    // Make an API call to retrieve FAQs by keyword
-    fetch(`/faqs/search?keyword=${message}`)
-      .then(response => response.json())
-      .then(data => {
-        // Handle the response data (list of FAQs)
-        console.log(data);
-        // Update the chat history with the retrieved FAQs or their response
-        setChatHistory([...chatHistory, { type: 'response', text: data }]);
-      })
-      .catch(error => {
-        console.error('Error fetching FAQs:', error);
-        // Handle error if needed
-      });
+    const botResponse = getChatbotResponse(message);
+  
+    if (botResponse !== "I'm sorry, I don't understand your question.") {
+      setChatHistory([
+        ...chatHistory,
+        { type: 'response', text: botResponse }
+      ]);
+    } else {
+      const isResetPasswordMessage = message.toLowerCase().includes('reset') || 
+                                     message.toLowerCase().includes('change') || 
+                                     message.toLowerCase().includes('update') || 
+                                     message.toLowerCase().includes('password');
+
+      if (isResetPasswordMessage) {
+        fetch(`/faqs/search?keyword=${message}`)
+          .then(response => response.json())
+          .then(data => {
+            setChatHistory([
+              ...chatHistory,
+              { type: 'response', text: "Here are some FAQs related to resetting password:" },
+              ...data.map(faq => ({ type: 'response', text: `${faq.question}: ${faq.answer}` }))
+            ]);
+          })
+          .catch(error => {
+            console.error('Error fetching FAQs:', error);
+          });
+      } else {
+        setChatHistory([
+          ...chatHistory,
+          { type: 'response', text: "I'm sorry, I couldn't understand your request." }
+        ]);
+      }
+    }
   };
 
   return (
