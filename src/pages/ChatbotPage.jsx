@@ -61,17 +61,41 @@ function ChatbotPage() {
 
       {isChatOpen && (
         <div className={styles.chatWindow}>
+
+          <div className={styles.chatWindow_top}>
+
+          </div>
+
           <div className={styles.toggleButton} onClick={toggleChat}>
             <img src={minimizeIcon} alt="Minimize Chat" />
           </div>
+
+
           <div className={styles.messageDisplay}>
             {chatHistory.map((chat, index) => (
               <div key={index} className={styles.message}>
-                {chat.type === 'user' && <p>{chat.text}</p>}
-                {chat.type === 'response' && <p>{chat.text}</p>}
+                {chat.type === 'user' && 
+                  <div className={styles.msg_box}>
+                    <div className={styles.msg_box_usr}>
+                      <div className={styles.msg_usr}>{chat.text}</div>
+                      <div className={styles.msg_user_avatar}>👤</div>
+                    </div>
+                    
+                  </div>
+                }
+                {chat.type === 'response' && 
+                <div className={styles.msg_box}>
+                    <div className={styles.msg_box_bot}>
+                      <div className={styles.msg_bot_avatar}>🤖</div>
+                      <div className={styles.msg_bot}>{chat.text}</div>
+                    </div>
+
+                </div>}
               </div>
             ))}
           </div>
+
+
           <div className={styles.messageInput}>
             <input
               type="text"

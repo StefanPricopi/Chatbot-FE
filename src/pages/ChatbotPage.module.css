@@ -26,14 +26,25 @@ body {
     width: 300px;
     height: 400px;
     background-color: #fff;
-    border-radius: 10px;
+    border-radius: 14px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display:flex;
+    flex-direction: column;
   }
   
+.chatWindow_top 
+{
+  height: 3.7vh;
+  background-color: #3f3f3f;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+
+}
+
   .toggleButton {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 7px;
+    right: 6px;
     cursor: pointer;
   }
   
@@ -47,6 +58,68 @@ body {
     overflow-y: auto;
   }
   
+.msg_box 
+{
+  display:flex;
+  width: 100%;
+  border-radius: 4px;
+  
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.msg_box_usr 
+{
+  background-color: rgb(30, 138, 238);
+  margin-left: auto;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  color: white;
+  line-height: 2;
+}
+
+.msg_box_bot 
+{
+  background-color: rgb(235, 235, 235);
+  margin-right: auto;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  color: rgb(63, 63, 63);
+  line-height: 2;
+}
+
+.msg_usr
+{
+  width:90%;
+  text-align: left;
+  padding-left: 15px;
+  padding-right: 10px;
+  font-weight: 600;
+  font-size: small;
+}
+
+.msg_user_avatar 
+{
+  padding-right: 10px;
+}
+
+.msg_bot
+{
+  width:90%;
+  text-align: left;
+  padding-left: 15px;
+  padding-right: 10px;
+  font-weight: 600;
+  font-size: small;
+}
+
+.msg_bot_avatar 
+{
+  padding-left: 10px;
+}
+
   .messageInput {
     display: flex;
     align-items: center;

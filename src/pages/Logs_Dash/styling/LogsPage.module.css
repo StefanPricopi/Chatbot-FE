@@ -30,6 +30,15 @@
     background-color: rgb(21, 92, 0);
 }
 
+
+.chatlog_prio_h 
+{
+    color: rgb(255, 0, 0);
+    font-weight: bold;
+    font-style: italic;
+}
+
+
 /*
     Search section
 */

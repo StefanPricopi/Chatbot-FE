@@ -60,7 +60,7 @@ export default function ChatlogItem({chatId, refreshList}) {
           <p>Chat #{chatInfo.id}</p>
           <p>Customer - {chatInfo.customer_id}</p>
           <p className={chatInfo.hasBeenSolved ? styles.chatlog_solved : styles.chatlog_unsolved}>{chatInfo.hasBeenSolved ? "Solved" : "Unsolved"}</p>
-          <p>Priority: HIGH</p>
+          <p>Priority: <span className={chatInfo.highPrio ? styles.chatlog_prio_h : styles.chatlog_prio_l}>{chatInfo.highPrio ? "High" : "Low"} </span></p>
           <button className={styles.chatlog_open_btn}>Open</button>
     </section>
   )
