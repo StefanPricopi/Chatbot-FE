@@ -11,6 +11,7 @@ export default function LogsPage() {
   const [chatLogs, SetChatlogs] = useState([]);
   const [filteredLogs, SetFilteredLogs] = useState("all");
   const [displayChat, SetDisplayChat] = useState(false);
+  const [chatId, SetChatId] = useState(0);
 
 
   useEffect(() => {
@@ -54,14 +55,9 @@ export default function LogsPage() {
 
   const showChat = (chat_id = 0) => 
   {
-    //alert();
-    console.log(`Chat ${chat_id}`);
-    SetDisplayChat(true);
-
-    if(displayChat)
-    {
-      SetDisplayChat(false);
-    }
+    console.log(`Chat ${chat_id}, \nWorks`);
+    SetChatId(chat_id);
+    SetDisplayChat(prevDisplay => !prevDisplay);
   }
 
   return (
@@ -73,8 +69,7 @@ export default function LogsPage() {
     	        <h2 className={styles.title}>Chatlogs</h2>
 
 
-                {displayChat && <Chatwindow displayChat={showChat}/>}
-
+                {displayChat && <Chatwindow displayChat={showChat} chatId={chatId}/>}
 
                 <div className={styles.log_section}>
                   {/* This is the main container of the different logs.. */}

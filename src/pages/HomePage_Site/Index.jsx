@@ -34,7 +34,7 @@ export default function () {
         {/* Main Animated image etc */}
 
                    
-          <video className={style.animated_img} autoplay>
+          <video className={style.animated_img} autoplay muted>
             <source src="https://cms.media.basworld.com/v/basgroup/Dronebeelden_videowall_V4/mp4_480p" type="video/mp4"/>
           </video>
           <div className={style.animated_txt}>
