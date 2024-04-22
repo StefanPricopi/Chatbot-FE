@@ -55,9 +55,9 @@ export default function LogsPage() {
 
   const showChat = (chat_id = 0) => 
   {
-    console.log(`Chat ${chat_id}, \nWorks`);
+    console.log("Got triggerd");
     SetChatId(chat_id);
-    SetDisplayChat(prevDisplay => !prevDisplay);
+    SetDisplayChat(prevDisplayChat => !prevDisplayChat);
   }
 
   return (
@@ -69,7 +69,7 @@ export default function LogsPage() {
     	        <h2 className={styles.title}>Chatlogs</h2>
 
 
-                {displayChat && <Chatwindow displayChat={showChat} chatId={chatId}/>}
+                {displayChat ? <Chatwindow displayChat={showChat} chatId={chatId}/> : null}
 
                 <div className={styles.log_section}>
                   {/* This is the main container of the different logs.. */}
