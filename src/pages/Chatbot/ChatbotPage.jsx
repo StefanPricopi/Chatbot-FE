@@ -95,6 +95,13 @@ function ChatbotPage() {
   }
 
 
+  const submitViaField = (event) => {
+    if(event.key === 'Enter')
+    {
+      sendMessage();
+    }
+  }
+
   const sendMessage = async () => {
 
     if(chatHistory.length <= 1)
@@ -183,8 +190,9 @@ function ChatbotPage() {
               placeholder="Type your message..."
               value={message}
               onChange={handleMessageChange}
+              onKeyDown={submitViaField}
             />
-            <button className={styles.sendButton} onClick={sendMessage}>Send</button>
+            <button className={styles.sendButton} onClick={sendMessage} >Send</button>
           </div>
         </div>
       )}
