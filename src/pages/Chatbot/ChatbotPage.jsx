@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './ChatbotPage.module.css';
 import minimizeIcon from '../../components/images/minimize-icon-3.png';
 import openIcon from '../../components/images/chat2.png'; 
@@ -9,7 +9,7 @@ function ChatbotPage() {
   const [isChatOpen, setIsChatOpen] = useState(true);
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
-  const [chatId, setChatId] = useState(0);
+  const chatIdRef = useRef(0);
   // Going to do this without state as it doesn't directly update the state when called. 
 
   useEffect(() => {
@@ -65,14 +65,11 @@ function ChatbotPage() {
 
   const logMessage = async(user, role, msg) => 
   {
-
-    console.log(role);
-
-    if(chatId > 0)
+    if(chatIdRef.current > 0)
     {
       LogsApi.logMessage(
         {
-          chat_id: chatId,
+          chat_id: chatIdRef.current,
           message: {
             sendBy: {
               userId:user.id,
@@ -94,10 +91,10 @@ function ChatbotPage() {
   }
 
   // simple enter key event.
-  const submitViaField = (event) => {
+  const submitViaField = async(event) => {
     if(event.key === 'Enter')
     {
-      sendMessage();
+      await sendMessage();
     }
   }
 
@@ -108,9 +105,10 @@ function ChatbotPage() {
     // Used to initiate the chatlogging!
     if(chatHistory.length <= 1)
     {
-      LogsApi.createChat(
-        {
+      try {
+        const res = await LogsApi.createChat({
           sendBy: {
+            /// This is mock data should be binded with Authentication later on!
             userId: 1, 
             userName: "shelson", 
             email: "", 
@@ -118,32 +116,65 @@ function ChatbotPage() {
           },
           message: message, 
           dateTime: ""
-        }
-      )
-      .then(res => {
-        setChatId(res.chat_id);
-      });
-    }
-    // End of chatlogging stufferoe
+        });
+
+        console.log(res.chat_id);
+        chatIdRef.current = res.chat_id;
+
+        console.log(`we've reached here! ${chatIdRef.current}`);
 
 
-      setChatHistory(prevChatHistory => [
-      ...prevChatHistory,
-        { type: 'user', text: message }
-      ]);
-      
-      setMessage('');
-
-      const botResponse = await getChatbotResponse(message);
-    
-      setChatHistory(prevChatHistory =>[
+        setChatHistory(prevChatHistory => [
         ...prevChatHistory,
-        { type: 'response', text: botResponse }
-      ]);
+          { type: 'user', text: message }
+        ]);
+
+        setMessage('');
+
+        const botResponse = await getChatbotResponse(message);
+        setChatHistory(prevChatHistory =>[
+            ...prevChatHistory,
+            { type: 'response', text: botResponse }
+          ]);
 
 
-      logMessage({id: 0, username:"BOT", email: "BOT"}, "Customer Service", botResponse);
+        //logMessage({id: 1, username:"shelson", email: "shelson@gmail.com"}, "Customer", message);
+        logMessage({id: 0, username:"BOT", email: "BOT"}, "Customer Service", botResponse);
+        
+
+      } catch (error) {
+        console.error(`Error: ${error}`);
+      }
+    }
+    else 
+    {
+      if(chatIdRef.current > 0)
+      {
+        setChatHistory(prevChatHistory => [
+        ...prevChatHistory,
+          { type: 'user', text: message }
+        ]);
+
+        setMessage('');
+        
+        const botResponse = await getChatbotResponse(message);
+        setChatHistory(prevChatHistory =>[
+            ...prevChatHistory,
+            { type: 'response', text: botResponse }
+          ]);
+
+
+        logMessage({id: 1, username:"shelson", email: "shelson@gmail.com"}, "Customer", message);
+        logMessage({id: 0, username:"BOT", email: "BOT"}, "Customer Service", botResponse);
+        
+      }
+      else {
+        console.error(`Chat doesn't exist: ${chatId}`);
+      }
+    }
+    
   };
+
 
   return (
     <div>
