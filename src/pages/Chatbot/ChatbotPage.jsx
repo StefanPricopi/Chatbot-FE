@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styles from './ChatbotPage.module.css';
 import minimizeIcon from '../../components/images/minimize-icon-3.png';
 import openIcon from '../../components/images/chat2.png'; 
+import LogsApi from '../../api/LogsApi';
 import style from "./ChatbotPage.module.css";
 
 function ChatbotPage() {
@@ -9,15 +10,20 @@ function ChatbotPage() {
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
 
+  // Going to do this without state as it doesn't directly update the state when called. 
+  let chatId = 0;
+
   useEffect(() => {
     sendWelcomeMessage();
   }, []);
+
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
   };
 
   const sendWelcomeMessage = () => {
+
     setChatHistory([
       ...chatHistory,
       { type: 'response', text: "Hey there! How can I help you today?" }
@@ -38,6 +44,7 @@ function ChatbotPage() {
         body: JSON.stringify({ message }),
       });
       
+
       if (!response.ok) {
         throw new Error('Failed to get chatbot response');
       }
@@ -57,19 +64,75 @@ function ChatbotPage() {
     }
   };
 
-  const sendMessage = async () => {
-    setChatHistory([
-      ...chatHistory,
-      { type: 'user', text: message }
-    ]);
-    setMessage('');
+  const logMessage = async(user, role, msg) => 
+  {
 
-    const botResponse = await getChatbotResponse(message);
-  
-    setChatHistory([
+    console.log(role);
+
+    if(chatId > 0)
+    {
+      LogsApi.logMessage(
+        {
+          chat_id: chatId,
+          message: {
+            sendBy: {
+              userId:user.id,
+              userName: user.username,
+              email: user.email, 
+              role: role
+            },
+            message: msg
+          }
+        })
+        .catch(err => {
+          console.error(`Oh no something went wrong: ${err}`);
+        });
+    }
+    else 
+    {
+      console.error("Chat doesn't exist " + chatId);
+    }
+  }
+
+
+  const sendMessage = async () => {
+
+    if(chatHistory.length <= 1)
+    {
+      LogsApi.createChat(
+        {
+          sendBy: {
+            userId: 1, 
+            userName: "shelson", 
+            email: "", 
+            role: "Customer"
+          },
+          message: message, 
+          dateTime: ""
+        }
+      )
+      .then(res => {
+        chatId = res.chat_id;
+      });
+    }
+    
+      setChatHistory([
       ...chatHistory,
-      { type: 'response', text: botResponse }
-    ]);
+        { type: 'user', text: message }
+      ]);
+      
+      setMessage('');
+
+      const botResponse = await getChatbotResponse(message);
+    
+      setChatHistory([
+        ...chatHistory,
+        { type: 'response', text: botResponse }
+      ]);
+
+
+      logMessage({id: 0, username:"BOT", email: "BOT"}, "Customer Service", botResponse);
+
   };
 
   return (
