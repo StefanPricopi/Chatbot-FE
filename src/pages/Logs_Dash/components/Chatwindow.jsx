@@ -1,15 +1,54 @@
 import React, { useEffect, useState } from 'react'
 import styles from '../styling/Chatwindow.module.css'
 import LogsApi from '../../../api/LogsApi';
-
+import { v4 as uuidv4 } from 'uuid';
+import { Stomp } from "@stomp/stompjs";
 
 export default function Chatwindow({displayChat, chatId}) {
 
     const [chatInfo, SetChatInfo] = useState({});
+    
+    
+    const [user, setUser] = useState();
+    const [chatReceived, setChatReceived] = useState([]);
+    const [stompClient, setStompClient] = useState(null);
+    const [messages, setMessages] = useState([]);
 
+    /* Websocket part! */
+    const socket = new WebSocket('ws://localhost:8080/livechat');
+    const stomp = Stomp.over(socket);
+
+    stomp.connect({}, () => {
+        stomp.subscribe('/topic/messages', (msg) => {
+            const newMsg = [...messages, JSON.parse(msg)]
+        });
+
+        setStompClient(stomp);
+    });
+
+
+    const sendMessage = (event) => {
+        if(event.key === 'Enter')
+        {
+            stompClient.send('/app/chat', {}, JSON.stringify({content: "TEST"}));
+        }
+    }
 
     useEffect(()=>{
         fetchChat();
+
+        // Testing
+        if(stompClient != null)
+        {
+            const payload = {'id': uuidv4(),  'from': user, 'to': "".to, 'text': "Hello world"};
+        
+        
+            stompClient.publish({'destination' : '/liveChat/publicmessages', body: JSON.stringify(payload)});
+        }
+        else
+        {
+            console.log("no?");
+        }
     }, []);
 
 
@@ -61,7 +100,11 @@ export default function Chatwindow({displayChat, chatId}) {
         <div className={styles.sub_box}>
             {/* Secondaire section which contains the information + a button which can be used to join the convo. */}
             
-            
+            <form>
+                <input className={styles.chat_inputfield} type="text" />
+                <input className={styles.chat_inputfield_btn} type="submit" />
+            </form>
+                        
         </div>
 
 
