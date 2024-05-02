@@ -9,9 +9,8 @@ function ChatbotPage() {
   const [isChatOpen, setIsChatOpen] = useState(true);
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
-
+  const [chatId, setChatId] = useState(0);
   // Going to do this without state as it doesn't directly update the state when called. 
-  let chatId = 0;
 
   useEffect(() => {
     sendWelcomeMessage();
@@ -94,7 +93,7 @@ function ChatbotPage() {
     }
   }
 
-
+  // simple enter key event.
   const submitViaField = (event) => {
     if(event.key === 'Enter')
     {
@@ -104,6 +103,9 @@ function ChatbotPage() {
 
   const sendMessage = async () => {
 
+
+    // Checks if this is the first message which has been sent 
+    // Used to initiate the chatlogging!
     if(chatHistory.length <= 1)
     {
       LogsApi.createChat(
@@ -119,12 +121,14 @@ function ChatbotPage() {
         }
       )
       .then(res => {
-        chatId = res.chat_id;
+        setChatId(res.chat_id);
       });
     }
-    
-      setChatHistory([
-      ...chatHistory,
+    // End of chatlogging stufferoe
+
+
+      setChatHistory(prevChatHistory => [
+      ...prevChatHistory,
         { type: 'user', text: message }
       ]);
       
@@ -132,14 +136,13 @@ function ChatbotPage() {
 
       const botResponse = await getChatbotResponse(message);
     
-      setChatHistory([
-        ...chatHistory,
+      setChatHistory(prevChatHistory =>[
+        ...prevChatHistory,
         { type: 'response', text: botResponse }
       ]);
 
 
       logMessage({id: 0, username:"BOT", email: "BOT"}, "Customer Service", botResponse);
-
   };
 
   return (
