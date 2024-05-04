@@ -102,7 +102,7 @@ export default function Chatwindow({displayChat, chatId}) {
             
             <form>
                 <input className={styles.chat_inputfield} type="text" />
-                <input className={styles.chat_inputfield_btn} type="submit" />
+                <input className={styles.chat_inputfield_btn} type="submit" onClick={sendMessage}/>
             </form>
                         
         </div>
