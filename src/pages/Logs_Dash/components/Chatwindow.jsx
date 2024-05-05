@@ -30,12 +30,18 @@ export default function Chatwindow({displayChat, chatId}) {
 
 
         stompClient.onConnect = () => {
-            stompClient.subscribe('/chat/publicmessages', (data) => {
-                console.log(`Public message: ${data.body}`);
-            });
+            
+            //Listening to public announcements.
+            // stompClient.subscribe('/chat/publicmessages', (data) => {
+            //     console.log(`Public message: ${data.body}`);
+            // });
 
-            stompClient.subscribe(`/user/${chatId}/queue/inboxmessages}`, (data) => {
-                console.log(`Private message: ${data.body}`);
+            /// private messaging
+            stompClient.subscribe(`/user/${chatId}/queue/inboxmessages`, (data) => {
+                
+
+                fetchChat();
+                //console.log(`Private message: ${data.body}`);
             });
         };
 
@@ -52,20 +58,24 @@ export default function Chatwindow({displayChat, chatId}) {
         if(stompClient != null)
         {
 
-            let payload = {"chatId": chatId, "message":liveMsg};
-            const destination = `/chats/${chatId}/queue/inboxmessages`;
+            let payload = {"chatId": chatId, "message":liveMsg, "role": "Customer_Service", disableBot: true};
 
-            stompClient.publish({
-                destination: "/chat/publicmessages", 
-                body: JSON.stringify({content: payload})
-            });
+            /// Public messaging (maybe for later)
+            // stompClient.publish({
+            //     destination: "/chat/publicmessages", 
+            //     body: JSON.stringify({content: payload})
+            // });
 
+
+            // Private messaging!
+            const destination = `/user/${chatId}/queue/inboxmessages`;
             stompClient.publish({
-                destination: `/user/${chatId}/queue/inboxmessages`, 
+                destination: destination, 
                 body: JSON.stringify({content: payload})
             });
 
             setLiveChat('');
+            fetchChat();
         }
         else
         {

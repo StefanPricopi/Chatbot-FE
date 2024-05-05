@@ -4,18 +4,77 @@ import minimizeIcon from '../../components/images/minimize-icon-3.png';
 import openIcon from '../../components/images/chat2.png'; 
 import LogsApi from '../../api/LogsApi';
 import style from "./ChatbotPage.module.css";
+import { Client } from "@stomp/stompjs";
+
 
 function ChatbotPage() {
   const [isChatOpen, setIsChatOpen] = useState(true);
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const chatIdRef = useRef(0);
+  const [disableBot, setDisableBot] = useState(false);
+  const [stompClient, setStompClient] = useState(null);
+
+
   // Going to do this without state as it doesn't directly update the state when called. 
 
   useEffect(() => {
     sendWelcomeMessage();
+
+    setupWebsocketry();
+
+
+
+
+
   }, []);
 
+
+  const setupWebsocketry = () => {
+    /* Websocketery !*/
+    const stompClient = new Client({
+      brokerURL: 'ws://localhost:8080/ws', 
+      reconnectDelay: 5000, 
+      heartbeatIncoming: 4000, 
+      heartbeatOutgoing: 4000
+  });
+
+
+  stompClient.onConnect = () => {
+      
+      //Listening to public announcements.
+      // stompClient.subscribe('/chat/publicmessages', (data) => {
+      //     console.log(`Public message: ${data.body}`);
+      // });
+
+      /// private messaging
+      console.log(`listening chatid ${chatIdRef.current}`);
+      stompClient.subscribe(`/user/${chatIdRef.current}/queue/inboxmessages`, (data) => {
+
+          let newdata= JSON.parse(data.body);
+          if(newdata.content.role == "Customer_Service")
+          {
+            // Disables the bot from responding
+            setDisableBot(true);
+
+            // Updates the chathistory (the messages you can see)
+            setChatHistory(prevChatHistory => [
+              ...prevChatHistory,
+                { type: 'response', text: newdata.content.message, bot: false }
+              ]);
+
+              logMessage({id: 0, username:"BOT", email: "BOT"}, "Customer Service", newdata.content.message);
+
+          }
+
+          
+      });
+  };
+
+  stompClient.activate();
+
+  setStompClient(stompClient);
+  }
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
@@ -25,7 +84,7 @@ function ChatbotPage() {
 
     setChatHistory([
       ...chatHistory,
-      { type: 'response', text: "Hey there! How can I help you today?" }
+      { type: 'response', text: "Hey there! How can I help you today?", bot: true }
     ]);
   };
 
@@ -105,6 +164,7 @@ function ChatbotPage() {
     // Used to initiate the chatlogging!
     if(chatHistory.length <= 1)
     {
+      // Only triggers when initiating the convo
       try {
         const res = await LogsApi.createChat({
           sendBy: {
@@ -118,27 +178,26 @@ function ChatbotPage() {
           dateTime: ""
         });
 
-        console.log(res.chat_id);
         chatIdRef.current = res.chat_id;
 
-        console.log(`we've reached here! ${chatIdRef.current}`);
 
+        setupWebsocketry();
 
         setChatHistory(prevChatHistory => [
         ...prevChatHistory,
           { type: 'user', text: message }
         ]);
 
+
         setMessage('');
 
         const botResponse = await getChatbotResponse(message);
         setChatHistory(prevChatHistory =>[
             ...prevChatHistory,
-            { type: 'response', text: botResponse }
+            { type: 'response', text: botResponse, bot: true }
           ]);
+            
 
-
-        //logMessage({id: 1, username:"shelson", email: "shelson@gmail.com"}, "Customer", message);
         logMessage({id: 0, username:"BOT", email: "BOT"}, "Customer Service", botResponse);
         
 
@@ -148,33 +207,57 @@ function ChatbotPage() {
     }
     else 
     {
+
       if(chatIdRef.current > 0)
       {
         setChatHistory(prevChatHistory => [
         ...prevChatHistory,
-          { type: 'user', text: message }
+          { type: 'user', text: message, bot: false }
         ]);
+        
+
+        
+
+        if(!disableBot)
+        {
+          const botResponse = await getChatbotResponse(message);
+          setChatHistory(prevChatHistory =>[
+              ...prevChatHistory,
+              { type: 'response', text: botResponse, bot: true }
+            ]);
+          logMessage({id: 0, username:"BOT", email: "BOT"}, "Customer Service", botResponse);
+
+        }
+        
+          logMessage({id: 1, username:"shelson", email: "shelson@gmail.com"}, "Customer", message);
+
+
+        // Dit update ook direct de chat!
+        sendWebsocketMsg();
 
         setMessage('');
-        
-        const botResponse = await getChatbotResponse(message);
-        setChatHistory(prevChatHistory =>[
-            ...prevChatHistory,
-            { type: 'response', text: botResponse }
-          ]);
 
-
-        logMessage({id: 1, username:"shelson", email: "shelson@gmail.com"}, "Customer", message);
-        logMessage({id: 0, username:"BOT", email: "BOT"}, "Customer Service", botResponse);
         
       }
       else {
-        console.error(`Chat doesn't exist: ${chatId}`);
+        console.error(`Chat doesn't exist: ${chatIdRef.current}`);
       }
     }
     
   };
 
+  const sendWebsocketMsg = () => 
+  {
+    // Private messaging!.
+    console.log(`Ok, sending it too: ${chatIdRef.current}`);
+    let payload = {"chatId": chatIdRef.current, "message":message, "role": "Customer"};
+
+    const destination = `/user/${chatIdRef.current}/queue/inboxmessages`;
+    stompClient.publish({
+        destination: destination, 
+        body: JSON.stringify({content: payload})
+    });
+  }
 
   return (
     <div>
@@ -204,10 +287,19 @@ function ChatbotPage() {
                     
                   </div>
                 }
-                {chat.type === 'response' && 
+                {chat.type === 'response' && chat.bot &&
                 <div className={styles.msg_box}>
                     <div className={styles.msg_box_bot}>
                       <div className={styles.msg_bot_avatar}>🤖</div>
+                      <div className={styles.msg_bot}>{chat.text}</div>
+                    </div>
+
+                </div>}
+                {/* This section is for the customer service employee response.*/}
+                {chat.type === 'response' && !chat.bot && disableBot &&
+                <div className={styles.msg_box}>
+                    <div className={styles.msg_box_bot}>
+                      <div className={styles.msg_bot_avatar}>🙋‍♂️</div>
                       <div className={styles.msg_bot}>{chat.text}</div>
                     </div>
 
