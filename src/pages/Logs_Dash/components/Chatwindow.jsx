@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import styles from '../styling/Chatwindow.module.css'
 import LogsApi from '../../../api/LogsApi';
 import { v4 as uuidv4 } from 'uuid';
-import { Stomp } from "@stomp/stompjs";
+import { Client } from "@stomp/stompjs";
+//import { Client } from 'sockjs-client';
 
 export default function Chatwindow({displayChat, chatId}) {
 
@@ -10,46 +11,68 @@ export default function Chatwindow({displayChat, chatId}) {
     
     
     const [user, setUser] = useState();
-    const [chatReceived, setChatReceived] = useState([]);
     const [stompClient, setStompClient] = useState(null);
+    const [liveMsg, setLiveChat] = useState("");    
+    
+    
     const [messages, setMessages] = useState([]);
-
-    /* Websocket part! */
-    const socket = new WebSocket('ws://localhost:8080/livechat');
-    const stomp = Stomp.over(socket);
-
-    stomp.connect({}, () => {
-        stomp.subscribe('/topic/messages', (msg) => {
-            const newMsg = [...messages, JSON.parse(msg)]
-        });
-
-        setStompClient(stomp);
-    });
-
-
-    const sendMessage = (event) => {
-        if(event.key === 'Enter')
-        {
-            stompClient.send('/app/chat', {}, JSON.stringify({content: "TEST"}));
-        }
-    }
 
     useEffect(()=>{
         fetchChat();
 
-        // Testing
+        /* Websocketery !*/
+        const stompClient = new Client({
+            brokerURL: 'ws://localhost:8080/ws', 
+            reconnectDelay: 5000, 
+            heartbeatIncoming: 4000, 
+            heartbeatOutgoing: 4000
+        });
+
+
+        stompClient.onConnect = () => {
+            stompClient.subscribe('/chat/publicmessages', (data) => {
+                console.log(`Public message: ${data.body}`);
+            });
+
+            stompClient.subscribe(`/user/${chatId}/queue/inboxmessages}`, (data) => {
+                console.log(`Private message: ${data.body}`);
+            });
+        };
+
+        stompClient.activate();
+
+        setStompClient(stompClient);
+
+    }, []);
+
+    const sendMessage = (e) => 
+    {
+        e.preventDefault();
+
         if(stompClient != null)
         {
-            const payload = {'id': uuidv4(),  'from': user, 'to': "".to, 'text': "Hello world"};
-        
-        
-            stompClient.publish({'destination' : '/liveChat/publicmessages', body: JSON.stringify(payload)});
+
+            let payload = {"chatId": chatId, "message":liveMsg};
+            const destination = `/chats/${chatId}/queue/inboxmessages`;
+
+            stompClient.publish({
+                destination: "/chat/publicmessages", 
+                body: JSON.stringify({content: payload})
+            });
+
+            stompClient.publish({
+                destination: `/user/${chatId}/queue/inboxmessages`, 
+                body: JSON.stringify({content: payload})
+            });
+
+            setLiveChat('');
         }
         else
         {
-            console.log("no?");
-        }
-    }, []);
+            console.log("Oh no, client == empty");
+        }  
+    }
+
 
 
     const fetchChat = () => 
@@ -101,7 +124,7 @@ export default function Chatwindow({displayChat, chatId}) {
             {/* Secondaire section which contains the information + a button which can be used to join the convo. */}
             
             <form>
-                <input className={styles.chat_inputfield} type="text" />
+                <input className={styles.chat_inputfield} type="text" value={liveMsg} onChange={(e) => {setLiveChat(e.target.value)}} autoFocus />
                 <input className={styles.chat_inputfield_btn} type="submit" onClick={sendMessage}/>
             </form>
                         
