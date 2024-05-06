@@ -7,7 +7,7 @@ import style from "./ChatbotPage.module.css";
 import { Client } from "@stomp/stompjs";
 
 
-function ChatbotPage() {
+function ChatbotPage({userInfo, trigger}) {
   const [isChatOpen, setIsChatOpen] = useState(true);
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
@@ -19,6 +19,14 @@ function ChatbotPage() {
   // Going to do this without state as it doesn't directly update the state when called. 
 
   useEffect(() => {
+
+    console.log(`Info we got: ${userInfo.current.id}`);
+    chatIdRef.current = userInfo.current.id
+
+
+    console.log(userInfo);
+
+
     sendWelcomeMessage();
 
     setupWebsocketry();
@@ -26,8 +34,7 @@ function ChatbotPage() {
 
 
 
-
-  }, []);
+  }, [trigger]);
 
 
   const setupWebsocketry = () => {
@@ -94,10 +101,13 @@ function ChatbotPage() {
 
   const getChatbotResponse = async (message) => {
     try {
+      //console.log(`So we're planning on sending this token: ${userInfo.current.token}`);
+
       const response = await fetch('http://localhost:8080/faqs/getChatbotResponse', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${userInfo.current.token}`
         },
         body: JSON.stringify({ message }),
       });
@@ -138,7 +148,7 @@ function ChatbotPage() {
             },
             message: msg
           }
-        })
+        }, userInfo.current.token)
         .catch(err => {
           console.error(`Oh no something went wrong: ${err}`);
         });
@@ -166,17 +176,19 @@ function ChatbotPage() {
     {
       // Only triggers when initiating the convo
       try {
+        console.log(userInfo.id);
+
         const res = await LogsApi.createChat({
           sendBy: {
             /// This is mock data should be binded with Authentication later on!
-            userId: 1, 
-            userName: "shelson", 
+            userId: userInfo.current.id, 
+            userName: "", 
             email: "", 
             role: "Customer"
           },
           message: message, 
           dateTime: ""
-        });
+        }, userInfo.current.token);
 
         chatIdRef.current = res.chat_id;
 
@@ -202,6 +214,11 @@ function ChatbotPage() {
         
 
       } catch (error) {
+        setChatHistory(prevChatHistory =>[
+            ...prevChatHistory,
+            { type: 'response', text: "Please log in before using !", bot: true }
+          ]);
+        setMessage('');
         console.error(`Error: ${error}`);
       }
     }
@@ -250,7 +267,7 @@ function ChatbotPage() {
   {
     // Private messaging!.
     console.log(`Ok, sending it too: ${chatIdRef.current}`);
-    let payload = {"chatId": chatIdRef.current, "message":message, "role": "Customer"};
+    let payload = {"chatId": chatIdRef.current, "message":message, "role": ["Customer"]};
 
     const destination = `/user/${chatIdRef.current}/queue/inboxmessages`;
     stompClient.publish({

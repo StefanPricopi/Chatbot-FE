@@ -1,9 +1,25 @@
-import React from 'react'
+import React, {useState, useRef} from 'react'
 import style from './styling/HomePage.module.css'
 import ChatbotPage from '../Chatbot/ChatbotPage'
+import LoginDash from './LoginComp'
 
 
 export default function () {
+
+  const authUser = useRef({id: 0, token: ""});
+  const [trigger, setTrigger] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+
+  const setUserInfo = (user) => {
+    authUser.current = {id: user.id, token: user.token}
+    setTrigger(prevTrigger => !prevTrigger);
+    //console.log(`token: ${authUser.current.token}\nuserId: ${authUser.current.id}`);    
+  }
+
+  const handleChange = () => {
+    setShowLogin(prev => !prev);
+  }
+
   return (
     <div className={style.main_container}>
       <div className={style.ratings_bar}>
@@ -24,12 +40,18 @@ export default function () {
         </div>
         
         <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKRF54Ib4Fgp1tZgscMo93-lAAUKxqTNK8_qYj5jNQ&s' className={style.logo} />       
+
+        <button className={style.loginbtn} onClick={handleChange}>
+          { showLogin ? "Login" : "Login"}
+        </button>
+
       </div>
       
       <div>
         {/* images etc */}
       </div>
-      
+
+
       <div className={style.main_section}>
         {/* Main Animated image etc */}
 
@@ -142,8 +164,10 @@ export default function () {
         </div>
 
       </div>
+      {/* login dashbaord. */}
+      {showLogin && <LoginDash setUserInfo={setUserInfo} /> }
 
-      <ChatbotPage />
+      <ChatbotPage userInfo={authUser} trigger={trigger}/>
 
     </div>
   )

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import styles from '../styling/LogsPage.module.css';
 import LogApi from '../../../api/LogsApi';
 
-export default function ChatlogItem({chatId, refreshList, displayChat}) {
+export default function ChatlogItem({chatId, refreshList, displayChat, userInfo}) {
 
 
   const [chatInfo, SetChatInfo] = useState({});
@@ -26,7 +26,7 @@ export default function ChatlogItem({chatId, refreshList, displayChat}) {
 
   const getChat = (id) => 
   {
-      LogApi.getChat(id)
+      LogApi.getChat(id, userInfo.token)
       .then(resp => {
         SetChatInfo(resp);
         //console.log(resp);
@@ -39,7 +39,7 @@ export default function ChatlogItem({chatId, refreshList, displayChat}) {
 
   const deleteLog = () => 
   {
-    LogApi.deleteChat(chatId)
+    LogApi.deleteChat(chatId, userInfo.token)
     .then(() => {
       console.log("Log has been deleted.");
       refreshList();

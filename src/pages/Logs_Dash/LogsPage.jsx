@@ -6,7 +6,7 @@ import Chatwindow from './components/Chatwindow';
 import NavBar from '../../components/NavBar'
 
 
-export default function LogsPage() {
+export default function LogsPage(userInfo) {
 
   const [chatLogs, SetChatlogs] = useState([]);
   const [filteredLogs, SetFilteredLogs] = useState("all");
@@ -22,7 +22,8 @@ export default function LogsPage() {
 
   const getAllLogs = () => 
   {
-    LogApi.getAllChats()
+
+    LogApi.getAllChats(userInfo.userInfo.token)
     .then(resp => {
       //SetChatlogs(resp.allChats);
       if(resp.allChats != "")
@@ -69,7 +70,7 @@ export default function LogsPage() {
     	        <h2 className={styles.title}>Chatlogs</h2>
 
 
-                {displayChat ? <Chatwindow displayChat={showChat} chatId={chatId}/> : null}
+                {displayChat ? <Chatwindow displayChat={showChat} chatId={chatId} userInfo={userInfo.userInfo}/> : null}
 
                 <div className={styles.log_section}>
                   {/* This is the main container of the different logs.. */}
@@ -90,7 +91,7 @@ export default function LogsPage() {
                   
                   <div className={styles.log_container}>
                     {filterLog.map((i) => (
-                      <ChatlogItem key={i.id} chatId={i.id} refreshList={() => {getAllLogs()}} displayChat={showChat}/>
+                      <ChatlogItem key={i.id} chatId={i.id} refreshList={() => {getAllLogs()}} displayChat={showChat} userInfo={userInfo.userInfo}/>
                     ))}
                   </div>
 

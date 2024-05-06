@@ -15,7 +15,7 @@
     "jwt-decode": "^4.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.22.3",
+    "react-router-dom": "^6.23.0",
     "sockjs": "^0.3.24",
     "sockjs-client": "^1.6.1",
     "uuidv4": "^6.2.13"

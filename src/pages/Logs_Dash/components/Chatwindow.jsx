@@ -4,7 +4,7 @@ import LogsApi from '../../../api/LogsApi';
 import { v4 as uuidv4 } from 'uuid';
 import { Client } from "@stomp/stompjs";
 
-export default function Chatwindow({displayChat, chatId}) {
+export default function Chatwindow({displayChat, chatId, userInfo}) {
 
     const [chatInfo, SetChatInfo] = useState({});
     const [user, setUser] = useState();
@@ -82,7 +82,7 @@ export default function Chatwindow({displayChat, chatId}) {
 
     const fetchChat = () => 
     {
-        LogsApi.getChat(chatId)
+        LogsApi.getChat(chatId, userInfo.token)
         .then(resp => {
             SetChatInfo(resp);
         })

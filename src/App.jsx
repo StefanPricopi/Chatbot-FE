@@ -1,51 +1,61 @@
 import React from 'react';
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import './App.css'
 import HomePage from './pages/HomePage'
 import LogsPage from './pages/Logs_Dash/LogsPage'
-import NavBar from './components/NavBar'
-import { Route, Routes, BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router,Route, Routes, Navigate, useNavigate } from "react-router-dom";
 import Index from './pages/HomePage_Site/Index';
 import LoginForm from './components/LoginForm';
 import TokenManager from './api/TokenManager';
 import AuthAPI from './api/AuthAPI';
+import LoginDashboard from './pages/LoginDashboard/LoginDashboard';
 
 function App() {
   const [claims, setClaims] = useState(TokenManager.getClaims());
-  const [customerDetails, setCustomerDetails] = useState(null);
+  const [loginSuccess, setLoginSuccess] = useState(false);
+  const userInfo = useRef({id:0, token: ""});
 
   const handleLogin = (username, password) => {
     AuthAPI.login(username, password)
       .catch(() => alert("Login failed!"))
-      .then(claims => setClaims(claims))
-      .then(getStudentDetails)
+      .then(claims => {
+        setClaims(claims);
+        userInfo.current = {id: claims.studentId, token: TokenManager.getAccessToken()};
+
+
+        setLoginSuccess(true);
+        
+        })
       .catch(error => console.error(error));
-  }
+    };
+
+
 
   const handleLogout = () => {
     TokenManager.clear();
     setClaims(null);
-    setCustomerDetails(null);
-  }
+    userInfo.current = {};
+  };
 
 
   return (
     <div>
-      {claims ? (
-            <div className="App">
-              <Router>
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/home" element={<Index />} />
-                  <Route path="/logs" element={<LogsPage />} />
-      
-                </Routes>
-              </Router>
-            </div>
-      ) : (
-        <LoginForm onLogin={handleLogin} />
-      )}
+        <div className="App">
+          <Router>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<LoginDashboard handleLogin={handleLogin}/>} />
 
+              <Route path="/home" element={loginSuccess ? <HomePage /> : <Navigate to="/login" />} />
+              <Route path="/logs" element={loginSuccess ? <LogsPage userInfo={userInfo.current}/> : <Navigate to="/login" />} />
+
+              <Route path="*" element={<Navigate to="/login"/>}/>
+
+
+              
+            </Routes>
+          </Router>
+        </div>
     </div>
   )
 
