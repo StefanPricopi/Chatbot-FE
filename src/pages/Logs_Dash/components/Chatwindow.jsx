@@ -3,18 +3,15 @@ import styles from '../styling/Chatwindow.module.css'
 import LogsApi from '../../../api/LogsApi';
 import { v4 as uuidv4 } from 'uuid';
 import { Client } from "@stomp/stompjs";
-//import { Client } from 'sockjs-client';
 
 export default function Chatwindow({displayChat, chatId}) {
 
     const [chatInfo, SetChatInfo] = useState({});
-    
-    
     const [user, setUser] = useState();
     const [stompClient, setStompClient] = useState(null);
     const [liveMsg, setLiveChat] = useState("");    
-    
-    
+
+
     const [messages, setMessages] = useState([]);
 
     useEffect(()=>{
@@ -83,8 +80,6 @@ export default function Chatwindow({displayChat, chatId}) {
         }  
     }
 
-
-
     const fetchChat = () => 
     {
         LogsApi.getChat(chatId)
@@ -97,6 +92,19 @@ export default function Chatwindow({displayChat, chatId}) {
 
     }
 
+    const closeConnection = () => 
+    {
+        try
+        {
+            stompClient.disconnect();
+
+        }
+        catch(e)
+        {
+            console.log("can't disconnect something which hasn't connected");
+        }
+    }
+
   return (
     <div className={styles.chat_window}>
         {/* 
@@ -105,7 +113,7 @@ export default function Chatwindow({displayChat, chatId}) {
 
         */}
         
-        <div onClick={() => {displayChat(chatInfo.id)}} className={styles.close_chat_btn}>
+        <div onClick={() => {displayChat(chatInfo.id); closeConnection()}} className={styles.close_chat_btn}>
             {/* Close button */}
             X
         </div>

@@ -19,6 +19,16 @@
     flex-direction: column;
 }
 
+.status_live 
+{
+    align-self: center;
+    font-size:1.7vh;
+}
+
+.status_date 
+{
+    
+}
 
 ::-webkit-scrollbar{
     width:6px;
