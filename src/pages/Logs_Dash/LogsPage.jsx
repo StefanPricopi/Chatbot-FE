@@ -12,6 +12,7 @@ export default function LogsPage() {
   const [filteredLogs, SetFilteredLogs] = useState("all");
   const [displayChat, SetDisplayChat] = useState(false);
   const [chatId, SetChatId] = useState(0);
+  const [chatsFilter, setChatsFilter] = useState("");
 
 
   useEffect(() => {
@@ -52,7 +53,6 @@ export default function LogsPage() {
     }
   });
 
-
   const showChat = (chat_id = 0) => 
   {
     console.log("Got triggerd");
@@ -75,16 +75,16 @@ export default function LogsPage() {
                   {/* This is the main container of the different logs.. */}
                   
                   <div className={styles.log_search_togglegroup}>
-                    <input type="search" className={styles.log_searchbar} />
+                    <input type="search" className={styles.log_searchbar} value={chatsFilter} onChange={setChatsFilter}/>
 
                     <input type="radio" onChange={()=> SetFilteredLogs("unsolved")} checked={filteredLogs === "unsolved"} id="unsolved" name="toggle" value="unsolved"/>
-                    <label for="unsolved">Unsolved</label>
+                    <label htmlFor="unsolved">Unsolved</label>
 
                     <input type="radio" onChange={() => SetFilteredLogs("solved")} checked={filteredLogs == "solved"} id="solved" name="toggle" value="solved"/>
-                    <label for="solved">Solved</label>
+                    <label htmlFor="solved">Solved</label>
 
                     <input type="radio" onChange={() => SetFilteredLogs("all")} checked={filteredLogs == "all"} id="all" name="toggle" value="all"/>
-                    <label for="all">ALL</label>
+                    <label htmlFor="all">ALL</label>
 
                   </div>
                   
