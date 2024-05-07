@@ -172,7 +172,7 @@ function ChatbotPage({userInfo, trigger}) {
 
     // Checks if this is the first message which has been sent 
     // Used to initiate the chatlogging!
-    console.log(chatHistory.length);
+    console.log(userInfo);
 
     if(chatHistory.length <= 2)
     {
@@ -257,7 +257,7 @@ function ChatbotPage({userInfo, trigger}) {
 
         }
         
-          logMessage({id: 1, username:"shelson", email: "shelson@gmail.com"}, "Customer", message);
+          logMessage({id: userInfo.current.id, username:"shelson", email: "shelson@gmail.com"}, "Customer", message);
 
 
         // Dit update ook direct de chat!
