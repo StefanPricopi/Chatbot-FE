@@ -41,7 +41,7 @@ function ChatbotPage({userInfo, trigger}) {
     /* Websocketery !*/
     const stompClient = new Client({
       brokerURL: 'ws://localhost:8080/ws', 
-      reconnectDelay: 5000, 
+      reconnectDelay: 500000, 
       heartbeatIncoming: 4000, 
       heartbeatOutgoing: 4000
   });
@@ -144,7 +144,7 @@ function ChatbotPage({userInfo, trigger}) {
               userId:user.id,
               userName: user.username,
               email: user.email, 
-              role: role
+              roles: [role]
             },
             message: msg
           }
@@ -172,28 +172,39 @@ function ChatbotPage({userInfo, trigger}) {
 
     // Checks if this is the first message which has been sent 
     // Used to initiate the chatlogging!
-    if(chatHistory.length <= 1)
+    console.log(chatHistory.length);
+
+    if(chatHistory.length <= 2)
     {
       // Only triggers when initiating the convo
+      console.log(userInfo.current.token);
       try {
-        console.log(userInfo.id);
+        console.log(`Current user id: ${userInfo.current.id}`);
 
         const res = await LogsApi.createChat({
           sendBy: {
             /// This is mock data should be binded with Authentication later on!
             userId: userInfo.current.id, 
-            userName: "", 
+            username: "", 
             email: "", 
-            role: "Customer"
+            roles: ["Customer"]
           },
           message: message, 
           dateTime: ""
         }, userInfo.current.token);
 
+        console.log(`Alright, started new chat on ${res.chat_id}`);
         chatIdRef.current = res.chat_id;
-
-
-        setupWebsocketry();
+        
+        try
+        {
+          setupWebsocketry();
+          
+        }
+        catch(e)
+        {
+          console.log("Oh no: " + e);
+        }
 
         setChatHistory(prevChatHistory => [
         ...prevChatHistory,

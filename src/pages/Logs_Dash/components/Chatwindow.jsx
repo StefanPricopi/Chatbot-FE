@@ -51,6 +51,9 @@ export default function Chatwindow({displayChat, chatId, userInfo}) {
     const sendMessage = (e) => 
     {
         e.preventDefault();
+        console.log(chatInfo.createdBy.roles[0]);
+        console.log(chatInfo);
+
 
         if(stompClient != null)
         {
@@ -89,7 +92,6 @@ export default function Chatwindow({displayChat, chatId, userInfo}) {
         .catch(err => {
             console.error(err);
         });
-
     }
 
     const closeConnection = () => 
@@ -125,9 +127,9 @@ export default function Chatwindow({displayChat, chatId, userInfo}) {
         <div className={styles.chat_box}>
             {/* Main section where the chats are displayed */}
             {chatInfo.messages != null && chatInfo.messages.role != ""? chatInfo.messages.map((i) => (
-                <div className={i.sendBy.role == "Customer Service" ? styles.chat_msg_CS : styles.chat_msg_C}>
-                    <div className={i.sendBy.role == "Customer Service" ? styles.msg_icon_CS : styles.msg_icon_C}>
-
+                <div key={i.message} className={i.sendBy.roles[0] == "Customer Service" ? styles.chat_msg_CS : styles.chat_msg_C}>
+                    <div className={i.sendBy.roles[0] == "Customer Service" ? styles.msg_icon_CS : styles.msg_icon_C}>
+                        {/* {console.log(i.sendBy.roles)} */}
                     </div>
                     <div>
                         <p>{i.message != null ? i.message : "empty"}</p>
