@@ -12,7 +12,7 @@ import LoginDashboard from './pages/LoginDashboard/LoginDashboard';
 
 function App() {
   const [claims, setClaims] = useState(TokenManager.getClaims());
-  const userInfo = useRef({id:0, token: ""});
+  const userInfo = useRef({id:0, token: "", role: ""});
   const [authorized, setAuthorized] = useState(false);
 
   const [loading, isLoading] = useState(true);
@@ -23,20 +23,22 @@ function App() {
       .catch(() => alert("Login failed!"))
       .then(claims => {
         setClaims(claims);
-        userInfo.current = {id: claims.studentId, token: TokenManager.getAccessToken()};
+        console.log(claims);
+        userInfo.current = {id: claims.studentId, token: TokenManager.getAccessToken(), role: claims.roles[0]};
         })
       .catch(error => console.error(error));
     };
 
     useEffect(() => {
-      let  token = TokenManager.getAccessToken();
-
-      if(token == null)
+      let token = TokenManager.getAccessToken();
+      let claims = TokenManager.getClaims();
+      if(token == null && claims == null)
       {
           handleLogout();
       }
       else {
         setAuthorized(true);
+        userInfo.current = {id: claims.studentId, token: token, role: claims.roles[0]};
       }
       isLoading(false);
     },[]);
@@ -59,8 +61,8 @@ function App() {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<LoginDashboard handleLogin={handleLogin}/>} />
-              <Route path="/home" element={authorized ? <HomePage /> : <Navigate to="/login" />} />
-              <Route path="/logs" element={authorized ? <LogsPage userInfo={userInfo.current}/> : <Navigate to="/login" />} />
+              <Route path="/home" element={authorized && userInfo.current.role == "ADMIN" ? <HomePage /> : <Navigate to="/login" />} />
+              <Route path="/logs" element={authorized &&  userInfo.current.role == "ADMIN" ? <LogsPage userInfo={userInfo.current}/> : <Navigate to="/login" />} />
               <Route path="*" element={<Navigate to="/login"/>}/>              
             </Routes>
           </Router>

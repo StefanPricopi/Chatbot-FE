@@ -20,7 +20,6 @@ export default function () {
   }
 
   const handleChange = () => {
-    console.log("display change");
 
     if(authorized)
     {

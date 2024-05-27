@@ -22,12 +22,8 @@ function ChatbotPage({userInfo, trigger}) {
 
   useEffect(() => {
 
-    console.log(`Info we got: ${userInfo.current.id}`);
+    //console.log(`Info we got: ${userInfo.current.id}`);
     chatIdRef.current = userInfo.current.id
-
-
-    console.log(userInfo);
-
 
     sendWelcomeMessage();
 
@@ -176,6 +172,21 @@ function ChatbotPage({userInfo, trigger}) {
     }
   }
 
+  const updateCS = () => {
+    // This will send a ping to the logs page. 
+    // It will refresh the list + add a status for the chat which is active. 
+
+    let payload = {"chatId": chatIdRef.current};
+    
+    console.log("Sending ping!");
+
+    const destination = `/chat/publicmessages`;
+    stompClient.publish({
+        destination: destination, 
+        body: JSON.stringify({content: payload})
+    });
+}
+
   const sendMessage = async () => {
 
 
@@ -208,7 +219,8 @@ function ChatbotPage({userInfo, trigger}) {
         try
         {
           setupWebsocketry();
-          
+          // After the first message it sends this ping. 
+          updateCS();
         }
         catch(e)
         {
@@ -271,7 +283,7 @@ function ChatbotPage({userInfo, trigger}) {
 
         // Dit update ook direct de chat!
         sendWebsocketMsg();
-
+        updateCS();
         setMessage('');
 
         

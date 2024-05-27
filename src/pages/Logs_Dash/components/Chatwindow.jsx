@@ -3,6 +3,7 @@ import styles from '../styling/Chatwindow.module.css'
 import LogsApi from '../../../api/LogsApi';
 import { v4 as uuidv4 } from 'uuid';
 import { Client } from "@stomp/stompjs";
+import TokenManager from '../../../api/TokenManager';
 
 export default function Chatwindow({displayChat, chatId, userInfo}) {
 
@@ -10,7 +11,7 @@ export default function Chatwindow({displayChat, chatId, userInfo}) {
     const [user, setUser] = useState();
     const [stompClient, setStompClient] = useState(null);
     const [liveMsg, setLiveChat] = useState("");    
-
+    const [solved, isSolved] = useState(false);
 
     const [messages, setMessages] = useState([]);
 
@@ -101,6 +102,7 @@ export default function Chatwindow({displayChat, chatId, userInfo}) {
         LogsApi.getChat(chatId, userInfo.token)
         .then(resp => {
             SetChatInfo(resp);
+            isSolved(resp.hasBeenSolved);
         })
         .catch(err => {
             console.error(err);
@@ -120,6 +122,19 @@ export default function Chatwindow({displayChat, chatId, userInfo}) {
         }
     }
 
+    const updateStatus = (stat) => 
+    {
+        
+        let payload = {chatId: chatId, status: stat};
+
+        LogsApi.updateStatus(payload, TokenManager.getAccessToken())
+        .then(() => {
+            console.log("Ok, status change is on its way");
+        });
+        
+        isSolved(prev => !prev);
+    }
+
   return (
     <div className={styles.chat_window}>
         {/* 
@@ -135,6 +150,8 @@ export default function Chatwindow({displayChat, chatId, userInfo}) {
 
         <div className={styles.chat_box_top} >
             {/* Toggle switch for setting the ticket/problem solved or not. */}
+            <label>Has been solved: </label>
+            <button onClick={() => {updateStatus(!solved)}} className={solved ? styles.isSolved : styles.notSolved}>{solved ? "Solved" : "Unsolved"}</button>
         </div>
 
         <div className={styles.chat_box}>
@@ -147,19 +164,16 @@ export default function Chatwindow({displayChat, chatId, userInfo}) {
                         <p>{i.message != null ? i.message : "empty"}</p>
                     </div>
                 </div>
-                    
             )) : null}
             
         </div>
 
         <div className={styles.sub_box}>
             {/* Secondaire section which contains the information + a button which can be used to join the convo. */}
-            
             <form>
                 <input className={styles.chat_inputfield} type="text" value={liveMsg} onChange={(e) => {setLiveChat(e.target.value)}} autoFocus />
                 <input className={styles.chat_inputfield_btn} type="submit" onClick={sendMessage}/>
             </form>
-                        
         </div>
 
 

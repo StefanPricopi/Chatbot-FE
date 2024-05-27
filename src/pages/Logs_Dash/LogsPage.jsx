@@ -16,6 +16,7 @@ export default function LogsPage(userInfo) {
   const [displayChat, SetDisplayChat] = useState(false);
   const [chatId, SetChatId] = useState(0);
   const [chatsFilter, setChatsFilter] = useState("");
+  const [liveChatNr, setLiveChatNr] = useState(0);
 
   const [stompClient, setStompClient] = useState(null);
 
@@ -31,7 +32,9 @@ export default function LogsPage(userInfo) {
 
     stompCL.onConnect = () => {
       stompCL.subscribe('/chat/publicmessages', (d) => {
-        console.log(d);
+        let msg = JSON.parse(d.body);
+        setLiveChatNr(msg.content.chatId);
+
         getAllLogs();
       });
     };
@@ -49,7 +52,7 @@ export default function LogsPage(userInfo) {
   const getAllLogs = () => 
   {
     let token = TokenManager.getAccessToken();
-    console.log(`Token we have currently:${token}`);
+    //console.log(`Token we have currently:${token}`);
     LogApi.getAllChats(token)
     .then(resp => {
       //SetChatlogs(resp.allChats);
@@ -58,7 +61,7 @@ export default function LogsPage(userInfo) {
         SetChatlogs(resp.allChats);
       }
       
-      console.log(resp.allChats);
+      //console.log(resp.allChats);
     })
     .catch(err => {
       console.error(err);
@@ -113,7 +116,7 @@ export default function LogsPage(userInfo) {
                   
                   <div className={styles.log_container}>
                     {filterLog.map((i) => (
-                      <ChatlogItem key={i.id} chatId={i.id} refres hList={() => {getAllLogs()}} displayChat={showChat} userInfo={userInfo.userInfo}/>
+                      <ChatlogItem key={i.id} chatId={i.id} refreshList={() => {getAllLogs()}} displayChat={showChat} userInfo={userInfo.userInfo} isLive={(i.id == liveChatNr)}/>
                     ))}
                   </div>
 

@@ -3,7 +3,7 @@ import styles from '../styling/LogsPage.module.css';
 import LogApi from '../../../api/LogsApi';
 
 
-export default function ChatlogItem({chatId, refreshList, displayChat, userInfo}) {
+export default function ChatlogItem({chatId, refreshList, displayChat, userInfo, isLive}) {
 
 
   const [chatInfo, SetChatInfo] = useState({});
@@ -70,7 +70,7 @@ export default function ChatlogItem({chatId, refreshList, displayChat, userInfo}
             <img className={styles.clock_icon} src="../../../public/clock_icon.png"/>
             {chatInfo.time != null ? ` ${chatInfo.time}` : "[Error getting time]"}
           </span>
-          {/* <span className={styles.status_live}>🔴Live</span> */}
+          {isLive ? <span className={styles.status_live}>🔴Live</span> : <span></span>}
           <button onClick={() => {displayChat(chatInfo.id)}} className={styles.chatlog_open_btn}>Open</button>
     </section>
   )

@@ -7,6 +7,7 @@ const LogApi = {
     getChat: (chatId, token) => axios.get(`${baseURL}/chat/${chatId}`, {headers: {Authorization: `Bearer ${token}`}}).then(res => res.data),
     createChat: (msg, token) => axios.post(`${baseURL}/chat/newchat`, msg, {headers: {Authorization: `Bearer ${token}`}}).then(res => res.data),
     logMessage: (msg, token) => axios.post(`${baseURL}/chat/logMsg`, msg, {headers: {Authorization: `Bearer ${token}`}}),
+    updateStatus: (status, token) => axios.post(`${baseURL}/chat/u_status`, status, {headers: {Authorization: `Bearer ${token}`}}),
     deleteChat: (chatId, token) => axios.delete(`${baseURL}/chat/delete/${chatId}`, {headers: {Authorization: `Bearer ${token}`}}),
 };
 
