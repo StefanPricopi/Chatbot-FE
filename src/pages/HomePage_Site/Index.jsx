@@ -74,7 +74,7 @@ export default function () {
         
         <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKRF54Ib4Fgp1tZgscMo93-lAAUKxqTNK8_qYj5jNQ&s' className={style.logo} />       
 
-        <button className={style.loginbtn} onClick={handleChange}>
+        <button className={authorized ? style.loginbtn_signedIn : style.loginbtn_signedOut} onClick={handleChange}>
           { authorized ? "Logout" : "Login"}
         </button>
 
