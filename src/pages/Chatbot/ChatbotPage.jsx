@@ -4,6 +4,8 @@ import minimizeIcon from '../../components/images/minimize-icon-3.png';
 import openIcon from '../../components/images/chat2.png'; 
 import LogsApi from '../../api/LogsApi';
 import style from "./ChatbotPage.module.css";
+import CustomEmojiPicker from './emoji_comp/CustomEmojiPicker.jsx';
+
 import { Client } from "@stomp/stompjs";
 
 
@@ -134,6 +136,10 @@ function ChatbotPage({userInfo, trigger}) {
 
   const logMessage = async(user, role, msg) => 
   {
+
+    const date_stamp = new Date().toISOString();
+    console.log(`Our date: ${date_stamp}`);
+
     if(chatIdRef.current > 0)
     {
       LogsApi.logMessage(
@@ -144,9 +150,10 @@ function ChatbotPage({userInfo, trigger}) {
               userId:user.id,
               userName: user.username,
               email: user.email, 
-              roles: [role]
+              roles: [role],
             },
-            message: msg
+            message: msg,
+            dateTime: date_stamp
           }
         }, userInfo.current.token)
         .catch(err => {
@@ -221,7 +228,7 @@ function ChatbotPage({userInfo, trigger}) {
           ]);
             
 
-        logMessage({id: 0, username:"BOT", email: "BOT"}, "Customer Service", botResponse);
+        logMessage({id: 0, username:"BOT", email: "BOT"}, "BOT", botResponse);
         
 
       } catch (error) {
@@ -253,7 +260,7 @@ function ChatbotPage({userInfo, trigger}) {
               ...prevChatHistory,
               { type: 'response', text: botResponse, bot: true }
             ]);
-          logMessage({id: 0, username:"BOT", email: "BOT"}, "Customer Service", botResponse);
+          logMessage({id: 0, username:"BOT", email: "BOT"}, "BOT", botResponse);
 
         }
         
@@ -338,6 +345,8 @@ function ChatbotPage({userInfo, trigger}) {
 
 
           <div className={styles.messageInput}>
+            {/* <CustomEmojiPicker /> */}
+
             <input
               type="text"
               className={styles.inputField}

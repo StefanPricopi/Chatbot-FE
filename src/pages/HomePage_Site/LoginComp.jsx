@@ -3,7 +3,7 @@ import styles from './styling/logindash.module.css'
 import AuthAPI from '../../api/AuthAPI';
 import TokenManager from '../../api/TokenManager';
 
-export default function LoginDash({setUserInfo}) {
+export default function LoginDash({setUserInfo, displaySelf}) {
 
     const [email, SetEmail] = useState("");
     const [pwd, SetPwd] = useState("");
@@ -27,6 +27,8 @@ export default function LoginDash({setUserInfo}) {
 
                 let payload = {id: resp.studentId, token: TokenManager.getAccessToken()}
                 setUserInfo(payload);
+                alert("Logged in");
+                displaySelf();
             })
             .catch(e => {
                 console.log("Unauthorized");
@@ -35,6 +37,7 @@ export default function LoginDash({setUserInfo}) {
         }  
         catch(e)
         {
+            alert("Logged in fail");
             console.log("login failed");
         }
     }

@@ -14,6 +14,19 @@ export default function Chatwindow({displayChat, chatId, userInfo}) {
 
     const [messages, setMessages] = useState([]);
 
+    const setStyleBasedOnRole = (role) => 
+    {
+        switch(role)
+        {
+            case "Customer":
+                return styles.chat_msg_C
+            case "Customer Service":
+                return styles.chat_msg_CS
+            case "BOT":
+                return styles.chat_msg_BOT
+        }
+    }
+
     useEffect(()=>{
         fetchChat();
 
@@ -51,8 +64,8 @@ export default function Chatwindow({displayChat, chatId, userInfo}) {
     const sendMessage = (e) => 
     {
         e.preventDefault();
-        console.log(chatInfo.createdBy.roles[0]);
-        console.log(chatInfo);
+        //console.log(chatInfo.createdBy.roles[0]);
+        //console.log(chatInfo);
 
 
         if(stompClient != null)
@@ -127,8 +140,8 @@ export default function Chatwindow({displayChat, chatId, userInfo}) {
         <div className={styles.chat_box}>
             {/* Main section where the chats are displayed */}
             {chatInfo.messages != null && chatInfo.messages.role != ""? chatInfo.messages.map((i) => (
-                <div key={i.message} className={i.sendBy.roles[0] == "Customer Service" ? styles.chat_msg_CS : styles.chat_msg_C}>
-                    <div className={i.sendBy.roles[0] == "Customer Service" ? styles.msg_icon_CS : styles.msg_icon_C}>
+                <div key={i.message} className={setStyleBasedOnRole(i.sendBy.roles[0])}>
+                    <div className={setStyleBasedOnRole(i.sendBy.roles[0])}>
                         {/* {console.log(i.sendBy.roles)} */}
                     </div>
                     <div>

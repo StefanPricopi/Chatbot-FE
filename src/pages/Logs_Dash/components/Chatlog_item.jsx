@@ -56,9 +56,8 @@ export default function ChatlogItem({chatId, refreshList, displayChat, userInfo}
         <div className={styles.chatlog_close_btn} onClick={deleteLog}>
           X
         </div>
-
           <p>Chat #{chatInfo.id}</p>
-          <p>Customer - {chatInfo.customer != null ? chatInfo.customer.userName: "error"}</p>
+          <p>Customer - {chatInfo.createdBy != null ? chatInfo.createdBy.username: "error"}</p>
           <p className={chatInfo.hasBeenSolved ? styles.chatlog_solved : styles.chatlog_unsolved}>{chatInfo.hasBeenSolved ? "Solved" : "Unsolved"}</p>
           <span className={styles.status_live}>Date: [Placeholder]</span>
           {/* <span className={styles.status_live}>🔴Live</span> */}

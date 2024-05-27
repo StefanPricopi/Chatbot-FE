@@ -4,6 +4,9 @@ import ChatlogItem from './components/Chatlog_item';
 import LogApi from '../../api/LogsApi';
 import Chatwindow from './components/Chatwindow';
 import NavBar from '../../components/NavBar'
+import TokenManager from '../../api/TokenManager';
+import { Client } from "@stomp/stompjs";
+
 
 
 export default function LogsPage(userInfo) {
@@ -14,16 +17,40 @@ export default function LogsPage(userInfo) {
   const [chatId, SetChatId] = useState(0);
   const [chatsFilter, setChatsFilter] = useState("");
 
+  const [stompClient, setStompClient] = useState(null);
+
 
   useEffect(() => {
+
+    // const stompCL = new Client({
+    //   brokerURL: 'ws://localhost:8080/ws', 
+    //   reconnectDelay: 5000, 
+    //   heartbeatIncoming: 4000, 
+    //   heartbeatOutgoing: 4000
+    // });
+
+    // stompCL.onConnect = () => {
+    //   stompCL.subscribe('/chat/publicmessages', (d) => {
+    //     console.log(d);
+    //     getAllLogs();
+    //   });
+    // };
+
+    // stompCL.activate();
+    // setStompClient(stompCL);
+
     getAllLogs();
   }, []);
 
+  useEffect(() => {
+
+  }, [chatLogs, filteredLogs, chatsFilter]);
 
   const getAllLogs = () => 
   {
-
-    LogApi.getAllChats(userInfo.userInfo.token)
+    let token = TokenManager.getAccessToken();
+    console.log(token);
+    LogApi.getAllChats(token)
     .then(resp => {
       //SetChatlogs(resp.allChats);
       if(resp.allChats != "")
@@ -40,18 +67,14 @@ export default function LogsPage(userInfo) {
 
 
   const filterLog = chatLogs.filter((log) => {
-    if(filteredLogs=="all")
-    {
-      return true;
-    }
-    else if(filteredLogs == "solved")
-    {
-      return log.hasBeenSolved == true;
-    }
-    else if(filteredLogs == "unsolved")
-    {
-      return log.hasBeenSolved == false;
-    }
+
+    const matchesFilter = filteredLogs === "all" ||
+      (filteredLogs == "solved" && log.hasBeenSolved) ||
+      (filteredLogs == "unsolved" && !log.hasBeenSolved);
+
+    const matchesSearch = chatsFilter === "" || log.id.toString().includes(chatsFilter);
+
+    return matchesFilter && matchesSearch;
   });
 
   const showChat = (chat_id = 0) => 
@@ -76,7 +99,7 @@ export default function LogsPage(userInfo) {
                   {/* This is the main container of the different logs.. */}
                   
                   <div className={styles.log_search_togglegroup}>
-                    <input type="search" className={styles.log_searchbar} value={chatsFilter} onChange={setChatsFilter}/>
+                    <input type="search" className={styles.log_searchbar} value={chatsFilter} onChange={(e) => setChatsFilter(e.target.value)}/>
 
                     <input type="radio" onChange={()=> SetFilteredLogs("unsolved")} checked={filteredLogs === "unsolved"} id="unsolved" name="toggle" value="unsolved"/>
                     <label htmlFor="unsolved">Unsolved</label>
@@ -91,7 +114,7 @@ export default function LogsPage(userInfo) {
                   
                   <div className={styles.log_container}>
                     {filterLog.map((i) => (
-                      <ChatlogItem key={i.id} chatId={i.id} refreshList={() => {getAllLogs()}} displayChat={showChat} userInfo={userInfo.userInfo}/>
+                      <ChatlogItem key={i.id} chatId={i.id} refres hList={() => {getAllLogs()}} displayChat={showChat} userInfo={userInfo.userInfo}/>
                     ))}
                   </div>
 

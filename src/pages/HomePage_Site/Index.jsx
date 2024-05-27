@@ -1,7 +1,8 @@
-import React, {useState, useRef} from 'react'
+import React, {useState, useRef, useEffect} from 'react'
 import style from './styling/HomePage.module.css'
 import ChatbotPage from '../Chatbot/ChatbotPage'
 import LoginDash from './LoginComp'
+import TokenManager from '../../api/TokenManager';
 
 
 export default function () {
@@ -10,15 +11,47 @@ export default function () {
   const [trigger, setTrigger] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
 
+  const [authorized, isAuthorized]  = useState(false);
+
   const setUserInfo = (user) => {
     authUser.current = {id: user.id, token: user.token}
     setTrigger(prevTrigger => !prevTrigger);
-    //console.log(`token: ${authUser.current.token}\nuserId: ${authUser.current.id}`);    
+    isAuthorized(true);
   }
 
   const handleChange = () => {
-    setShowLogin(prev => !prev);
+    console.log("display change");
+
+    if(authorized)
+    {
+      handleLogout();
+    }
+    else 
+    {
+      setShowLogin(prev => !prev);
+    }
   }
+
+  const handleLogout = () => {
+    TokenManager.clear();
+    isAuthorized(false);
+  }
+
+  useEffect(() => {
+    let token = TokenManager.getAccessToken();
+
+    if(token != null)
+    {
+      let claims = TokenManager.getClaims();
+
+      authUser.current = {id: claims.studentId, token: token}
+      isAuthorized(true);
+    }
+    else
+    {
+      isAuthorized(false);
+    }
+  }, []);
 
   return (
     <div className={style.main_container}>
@@ -42,7 +75,7 @@ export default function () {
         <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKRF54Ib4Fgp1tZgscMo93-lAAUKxqTNK8_qYj5jNQ&s' className={style.logo} />       
 
         <button className={style.loginbtn} onClick={handleChange}>
-          { showLogin ? "Login" : "Login"}
+          { authorized ? "Logout" : "Login"}
         </button>
 
       </div>
@@ -165,7 +198,7 @@ export default function () {
 
       </div>
       {/* login dashbaord. */}
-      {showLogin && <LoginDash setUserInfo={setUserInfo} /> }
+      {showLogin && <LoginDash setUserInfo={setUserInfo} displaySelf={handleChange}/> }
 
       <ChatbotPage userInfo={authUser} trigger={trigger}/>
 
