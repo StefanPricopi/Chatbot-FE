@@ -78,13 +78,13 @@ export default function LogsPage() {
                     <input type="search" className={styles.log_searchbar} />
 
                     <input type="radio" onChange={()=> SetFilteredLogs("unsolved")} checked={filteredLogs === "unsolved"} id="unsolved" name="toggle" value="unsolved"/>
-                    <label for="unsolved">Unsolved</label>
+                    <label htmlFor="unsolved">Unsolved</label>
 
                     <input type="radio" onChange={() => SetFilteredLogs("solved")} checked={filteredLogs == "solved"} id="solved" name="toggle" value="solved"/>
-                    <label for="solved">Solved</label>
+                    <label htmlFor="solved">Solved</label>
 
                     <input type="radio" onChange={() => SetFilteredLogs("all")} checked={filteredLogs == "all"} id="all" name="toggle" value="all"/>
-                    <label for="all">ALL</label>
+                    <label htmlFor="all">ALL</label>
 
                   </div>
                   

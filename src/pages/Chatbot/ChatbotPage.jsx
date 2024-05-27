@@ -39,22 +39,20 @@ function ChatbotPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${TokenManager.getAccessToken()}`
         },
         body: JSON.stringify({ message }),
       });
-      
-
+  
       if (!response.ok) {
         throw new Error('Failed to get chatbot response');
       }
       
       const contentType = response.headers.get("content-type");
       if (contentType && contentType.indexOf("application/json") !== -1) {
-        
         const data = await response.json();
         return data.response;
       } else {
-       
         return await response.text();
       }
     } catch (error) {

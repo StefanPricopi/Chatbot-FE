@@ -9,10 +9,12 @@ import Index from './pages/HomePage_Site/Index';
 import LoginForm from './components/LoginForm';
 import TokenManager from './api/TokenManager';
 import AuthAPI from './api/AuthAPI';
+import StatisticsPage from './pages/Statistics/StatisticsPage';
 
 function App() {
   const [claims, setClaims] = useState(TokenManager.getClaims());
   const [customerDetails, setCustomerDetails] = useState(null);
+  const [studentDetails, getStudentDetails] = useState(null)
 
   const handleLogin = (username, password) => {
     AuthAPI.login(username, password)
@@ -38,7 +40,7 @@ function App() {
                   <Route path="/" element={<HomePage />} />
                   <Route path="/home" element={<Index />} />
                   <Route path="/logs" element={<LogsPage />} />
-      
+                  <Route path="/statistics" element={<StatisticsPage />} />
                 </Routes>
               </Router>
             </div>

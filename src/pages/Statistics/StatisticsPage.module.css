@@ -1,0 +1,26 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.content {
+    flex: 1;
+    padding: 2rem;
+}
+
+.outOfOffice {
+    margin-top: 2rem;
+}
+
+.footer {
+    margin-top: auto;
+    font-weight: bold;
+    padding: 20px;
+    text-align: center;
+    background-color: #1D1D1A;
+}
+
+.footer p {
+    color: white;
+}
