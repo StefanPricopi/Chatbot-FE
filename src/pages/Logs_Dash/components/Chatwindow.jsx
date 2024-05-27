@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Client } from "@stomp/stompjs";
 import TokenManager from '../../../api/TokenManager';
 
-export default function Chatwindow({displayChat, chatId, userInfo}) {
+export default function Chatwindow({displayChat, chatId, userInfo, refreshList}) {
 
     const [chatInfo, SetChatInfo] = useState({});
     const [user, setUser] = useState();
@@ -130,6 +130,7 @@ export default function Chatwindow({displayChat, chatId, userInfo}) {
         LogsApi.updateStatus(payload, TokenManager.getAccessToken())
         .then(() => {
             console.log("Ok, status change is on its way");
+            refreshList();
         });
         
         isSolved(prev => !prev);

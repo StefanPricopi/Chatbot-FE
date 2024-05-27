@@ -95,7 +95,7 @@ export default function LogsPage(userInfo) {
     	        <h2 className={styles.title}>Chatlogs</h2>
 
 
-                {displayChat ? <Chatwindow displayChat={showChat} chatId={chatId} userInfo={userInfo.userInfo}/> : null}
+                {displayChat ? <Chatwindow displayChat={showChat} chatId={chatId} userInfo={userInfo.userInfo} refreshList={() => {getAllLogs()}}/> : null}
 
                 <div className={styles.log_section}>
                   {/* This is the main container of the different logs.. */}
