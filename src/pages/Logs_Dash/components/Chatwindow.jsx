@@ -142,7 +142,6 @@ export default function Chatwindow({displayChat, chatId, userInfo}) {
             {chatInfo.messages != null && chatInfo.messages.role != ""? chatInfo.messages.map((i) => (
                 <div key={i.message} className={setStyleBasedOnRole(i.sendBy.roles[0])}>
                     <div className={setStyleBasedOnRole(i.sendBy.roles[0])}>
-                        {/* {console.log(i.sendBy.roles)} */}
                     </div>
                     <div>
                         <p>{i.message != null ? i.message : "empty"}</p>

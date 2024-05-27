@@ -138,6 +138,8 @@ function ChatbotPage({userInfo, trigger}) {
   {
 
     const date_stamp = new Date().toISOString();
+    
+
     console.log(`Our date: ${date_stamp}`);
 
     if(chatIdRef.current > 0)
@@ -354,7 +356,7 @@ function ChatbotPage({userInfo, trigger}) {
               value={message}
               onChange={handleMessageChange}
               onKeyDown={submitViaField}
-            />
+              autoFocus/>
             <button className={styles.sendButton} onClick={sendMessage} >Send</button>
           </div>
         </div>

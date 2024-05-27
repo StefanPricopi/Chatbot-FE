@@ -22,22 +22,22 @@ export default function LogsPage(userInfo) {
 
   useEffect(() => {
 
-    // const stompCL = new Client({
-    //   brokerURL: 'ws://localhost:8080/ws', 
-    //   reconnectDelay: 5000, 
-    //   heartbeatIncoming: 4000, 
-    //   heartbeatOutgoing: 4000
-    // });
+    const stompCL = new Client({
+      brokerURL: 'ws://localhost:8080/ws', 
+      reconnectDelay: 5000, 
+      heartbeatIncoming: 4000, 
+      heartbeatOutgoing: 4000
+    });
 
-    // stompCL.onConnect = () => {
-    //   stompCL.subscribe('/chat/publicmessages', (d) => {
-    //     console.log(d);
-    //     getAllLogs();
-    //   });
-    // };
+    stompCL.onConnect = () => {
+      stompCL.subscribe('/chat/publicmessages', (d) => {
+        console.log(d);
+        getAllLogs();
+      });
+    };
 
-    // stompCL.activate();
-    // setStompClient(stompCL);
+    stompCL.activate();
+    setStompClient(stompCL);
 
     getAllLogs();
   }, []);
@@ -49,7 +49,7 @@ export default function LogsPage(userInfo) {
   const getAllLogs = () => 
   {
     let token = TokenManager.getAccessToken();
-    console.log(token);
+    console.log(`Token we have currently:${token}`);
     LogApi.getAllChats(token)
     .then(resp => {
       //SetChatlogs(resp.allChats);
@@ -79,7 +79,6 @@ export default function LogsPage(userInfo) {
 
   const showChat = (chat_id = 0) => 
   {
-    console.log("Got triggerd");
     SetChatId(chat_id);
     SetDisplayChat(prevDisplayChat => !prevDisplayChat);
   }
