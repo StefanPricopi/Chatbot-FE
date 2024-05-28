@@ -7,10 +7,46 @@
 .content {
     flex: 1;
     padding: 2rem;
+    background-color: #F4FFF0;
 }
 
-.outOfOffice {
+.statisticsWrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
     margin-top: 2rem;
+}
+
+.chartSection {
+    flex: 1;
+    min-width: 300px;
+    margin: 0 1rem;
+}
+
+.statBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 250px;
+    height: 150px;
+    background-color: #B9E2A7;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.statBox h2 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.statBox p {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: bold;
 }
 
 .footer {
