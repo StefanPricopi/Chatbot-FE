@@ -17,6 +17,9 @@ function ChatbotPage({userInfo, trigger}) {
   const [disableBot, setDisableBot] = useState(false);
   const [stompClient, setStompClient] = useState(null);
 
+  // This is a big no no! :'|
+  const [botId, setBotId] = useState(10031);
+
 
   // Going to do this without state as it doesn't directly update the state when called. 
 
@@ -56,19 +59,21 @@ function ChatbotPage({userInfo, trigger}) {
       console.log(`listening chatid ${chatIdRef.current}`);
       stompClient.subscribe(`/user/${chatIdRef.current}/queue/inboxmessages`, (data) => {
 
+          console.log("Hey we got a message!");
+
           let newdata= JSON.parse(data.body);
-          if(newdata.content.role == "Customer_Service")
+          if(newdata.content.role == "Customer_Service" || newdata.current.role == "ADMIN")
           {
             // Disables the bot from responding
             setDisableBot(true);
-
+            console.log(newdata);
             // Updates the chathistory (the messages you can see)
             setChatHistory(prevChatHistory => [
               ...prevChatHistory,
                 { type: 'response', text: newdata.content.message, bot: false }
               ]);
 
-              logMessage({id: 0, username:"BOT", email: "BOT"}, "Customer Service", newdata.content.message);
+              logMessage({id: newdata.content.user_id, username:"BOT", email: "BOT"}, "Customer Service", newdata.content.message);
 
           }
 
@@ -231,7 +236,7 @@ function ChatbotPage({userInfo, trigger}) {
             { type: 'response', text: botResponse, bot: true }
           ]);
             
-        logMessage({id: 0, username:"BOT", email: "BOT"}, "BOT", botResponse);
+        logMessage({id: botId, username:"BOT", email: "BOT"}, "BOT", botResponse);
         
 
       } catch (error) {
@@ -265,7 +270,7 @@ function ChatbotPage({userInfo, trigger}) {
             ]);
           logMessage({id: userInfo.current.id, username:"shelson", email: "shelson@gmail.com"}, "Customer", message);
             
-            logMessage({id: 0, username:"BOT", email: "BOT"}, "BOT", botResponse);
+            logMessage({id: botId, username:"BOT", email: "BOT"}, "BOT", botResponse);
 
         }
         

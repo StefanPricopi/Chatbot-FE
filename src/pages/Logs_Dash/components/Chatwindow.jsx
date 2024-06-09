@@ -80,7 +80,7 @@ export default function Chatwindow({displayChat, chatId, userInfo, refreshList})
         }
       };
 
-        LogsApi.logMessage(payload, userInfo.token);
+        //LogsApi.logMessage(payload, userInfo.token);
     }
 
 
@@ -94,7 +94,7 @@ export default function Chatwindow({displayChat, chatId, userInfo, refreshList})
         if(stompClient != null)
         {
 
-            let payload = {"chatId": chatId, "message":liveMsg, "role": "Customer_Service", disableBot: true};
+            let payload = {"chatId": chatId, "message":liveMsg, "user_id": userInfo.id, "role": "Customer_Service", disableBot: true};
 
             /// Public messaging (maybe for later)
             // stompClient.publish({
@@ -182,7 +182,7 @@ export default function Chatwindow({displayChat, chatId, userInfo, refreshList})
             {/* Main section where the chats are displayed 
             */}
             {chatInfo.messages != null ? chatInfo.messages.map((i) => (
-                <div key={i.message} className={setStyleBasedOnRole(i.sendByDTO.roles[0])}>
+                <div key={i.id} className={setStyleBasedOnRole(i.sendByDTO.roles[0])}>
                     <div className={setStyleBasedOnRole(i.sendByDTO.roles[0])}>
                     </div>
                     <div>
