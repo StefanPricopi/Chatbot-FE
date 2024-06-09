@@ -231,7 +231,6 @@ function ChatbotPage({userInfo, trigger}) {
             { type: 'response', text: botResponse, bot: true }
           ]);
             
-
         logMessage({id: 0, username:"BOT", email: "BOT"}, "BOT", botResponse);
         
 
@@ -264,11 +263,12 @@ function ChatbotPage({userInfo, trigger}) {
               ...prevChatHistory,
               { type: 'response', text: botResponse, bot: true }
             ]);
-          logMessage({id: 0, username:"BOT", email: "BOT"}, "BOT", botResponse);
+          logMessage({id: userInfo.current.id, username:"shelson", email: "shelson@gmail.com"}, "Customer", message);
+            
+            logMessage({id: 0, username:"BOT", email: "BOT"}, "BOT", botResponse);
 
         }
         
-          logMessage({id: userInfo.current.id, username:"shelson", email: "shelson@gmail.com"}, "Customer", message);
 
 
         // Dit update ook direct de chat!

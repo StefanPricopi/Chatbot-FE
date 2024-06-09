@@ -16,10 +16,12 @@
     "jwt-decode": "^4.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.23.0",
+    "react-router-dom": "^6.23.1",
     "sockjs": "^0.3.24",
     "sockjs-client": "^1.6.1",
-    "uuidv4": "^6.2.13"
+    "uuid": "^9.0.1",
+    "uuidv4": "^6.2.13",
+    "ws": "^8.17.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
