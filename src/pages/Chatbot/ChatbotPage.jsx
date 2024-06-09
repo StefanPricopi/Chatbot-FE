@@ -133,24 +133,23 @@ function ChatbotPage({userInfo, trigger}) {
     const date_stamp = new Date().toISOString();
     
 
-    console.log(`Our date: ${date_stamp}`);
 
     if(chatIdRef.current > 0)
     {
+
+      let payload = {
+        chat_id: chatIdRef.current,
+        message: {
+          user_id: user.id,
+          message:msg
+        }
+      };
+
+
+      console.log(payload);
+
       LogsApi.logMessage(
-        {
-          chat_id: chatIdRef.current,
-          message: {
-            sendBy: {
-              userId:user.id,
-              userName: user.username,
-              email: user.email, 
-              roles: [role],
-            },
-            message: msg,
-            dateTime: date_stamp
-          }
-        }, userInfo.current.token)
+        payload, userInfo.current.token)
         .catch(err => {
           console.error(`Oh no something went wrong: ${err}`);
         });
@@ -199,13 +198,7 @@ function ChatbotPage({userInfo, trigger}) {
         console.log(`Current user id: ${userInfo.current.id}`);
 
         const res = await LogsApi.createChat({
-          sendBy: {
-            /// This is mock data should be binded with Authentication later on!
-            userId: userInfo.current.id, 
-            username: "", 
-            email: "", 
-            roles: ["Customer"]
-          },
+          user_id: userInfo.current.id,
           message: message, 
           dateTime: ""
         }, userInfo.current.token);

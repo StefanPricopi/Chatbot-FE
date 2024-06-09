@@ -17,19 +17,22 @@ export default function Chatwindow({displayChat, chatId, userInfo, refreshList})
 
     const setStyleBasedOnRole = (role) => 
     {
-        switch(role)
+        switch(role.toLowerCase())
         {
-            case "Customer":
+            case "customer":
                 return styles.chat_msg_C
-            case "Customer Service":
+            case "customer Service":
                 return styles.chat_msg_CS
-            case "BOT":
+            case "admin":
+                return styles.chat_msg_CS
+            case "bot":
                 return styles.chat_msg_BOT
         }
     }
 
     useEffect(()=>{
         fetchChat();
+
 
         /* Websocketery !*/
         const stompClient = new Client({
@@ -62,6 +65,25 @@ export default function Chatwindow({displayChat, chatId, userInfo, refreshList})
 
     }, []);
 
+    const logChat = () => 
+    {
+        // 
+        //console.log(userInfo);
+        console.log("So our chat ID: " + chatId);
+        console.log(liveMsg);
+
+        let payload = {
+        chat_id: chatId,
+        message: {
+          user_id: userInfo.id,
+          message:liveMsg
+        }
+      };
+
+        LogsApi.logMessage(payload, userInfo.token);
+    }
+
+
     const sendMessage = (e) => 
     {
         e.preventDefault();
@@ -90,6 +112,7 @@ export default function Chatwindow({displayChat, chatId, userInfo, refreshList})
 
             setLiveChat('');
             fetchChat();
+            logChat();
         }
         else
         {
@@ -156,10 +179,11 @@ export default function Chatwindow({displayChat, chatId, userInfo, refreshList})
         </div>
 
         <div className={styles.chat_box}>
-            {/* Main section where the chats are displayed */}
-            {chatInfo.messages != null && chatInfo.messages.role != ""? chatInfo.messages.map((i) => (
-                <div key={i.message} className={setStyleBasedOnRole(i.sendBy.roles[0])}>
-                    <div className={setStyleBasedOnRole(i.sendBy.roles[0])}>
+            {/* Main section where the chats are displayed 
+            */}
+            {chatInfo.messages != null ? chatInfo.messages.map((i) => (
+                <div key={i.message} className={setStyleBasedOnRole(i.sendByDTO.roles[0])}>
+                    <div className={setStyleBasedOnRole(i.sendByDTO.roles[0])}>
                     </div>
                     <div>
                         <p>{i.message != null ? i.message : "empty"}</p>
