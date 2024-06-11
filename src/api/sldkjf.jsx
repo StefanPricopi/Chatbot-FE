@@ -1,11 +1,6 @@
-import { jwtDecode } from "jwt-decode";
-
-const userData = {
-    accessToken: undefined,
-    claims: undefined
-}
 
 const TokenManager = {
+    getAccessToken: () => userData.accessToken,
     getClaims: () => {
         if (!userData.claims) {
             return undefined;
@@ -18,7 +13,6 @@ const TokenManager = {
         userData.claims = claims;
         return claims;
     },
-    getAccessToken: () => userData.accessToken,
     clear: () => {
         userData.accessToken = undefined;
         userData.claims = undefined;
