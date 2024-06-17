@@ -16,6 +16,7 @@ export default function LoginForm({ setIs2FARequired, setUsername }) {
                 setUsername(localUsername);
             })
             .catch(e => {
+                console.log(e);
                 console.error("Unauthorized");
             });
     };

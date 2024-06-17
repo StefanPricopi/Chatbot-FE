@@ -5,7 +5,6 @@ const AuthAPI = {
     login: (username, password) => {
         return axios.post('http://localhost:8080/tokens', { username, password })
             .then(response => response.data.accessToken)
-            .then(accessToken => TokenManager.setAccessToken(accessToken))
             .catch(error => {
                 throw error;
             });

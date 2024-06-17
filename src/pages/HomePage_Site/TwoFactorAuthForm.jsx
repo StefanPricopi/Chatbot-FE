@@ -4,7 +4,7 @@ import AuthAPI from '../../api/AuthAPI';
 import TokenManager from '../../api/TokenManager';
 import { jwtDecode } from 'jwt-decode';
 
-export default function TwoFactorAuthForm({ username, setUserInfo }) {
+export default function TwoFactorAuthForm({ username, setUserInfo, onComplete}) {
     const [twoFactorCode, setTwoFactorCode] = useState("");
 
     const handleVerify2FA = (e) => {
@@ -16,10 +16,11 @@ export default function TwoFactorAuthForm({ username, setUserInfo }) {
                 TokenManager.setAccessToken(accessToken);
                 let claims = jwtDecode(accessToken);
 
-                console.log(claims);
+                //console.log(claims);
                 setUserInfo({ id: claims.studentId, token: accessToken });
-                console.log(accessToken);
+                //console.log(accessToken);
                 console.log("ok, so its successfull");
+                onComplete();
             })
             .catch(e => {
                 console.error("2FA verification failed", e);
