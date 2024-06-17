@@ -17,18 +17,13 @@ function App() {
 
   const handleLogin = (username, password) => {
     AuthAPI.dashLogin(username, password)
-      .catch(() => alert("Login failed!"))
-      .then(claims => {
-        setClaims(claims);
-
-        console.log(claims);
-
-        userInfo.current = {id: claims.studentId, token: TokenManager.getAccessToken()};
-
-
-        setLoginSuccess(true);
-        
-        })
+    .catch(() => alert("Login failed!"))
+    .then(claims => {
+      TokenManager.setAccessToken(claims.data.accessToken);
+      setClaims(TokenManager.getClaims());
+      userInfo.current = {id: claims.studentId, token: TokenManager.getAccessToken()};
+      setLoginSuccess(true);
+      })
       .catch(error => console.error(error));
     };
 
