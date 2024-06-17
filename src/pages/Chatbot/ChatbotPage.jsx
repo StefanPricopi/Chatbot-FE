@@ -50,34 +50,35 @@ function ChatbotPage({userInfo, trigger}) {
 
   stompClient.onConnect = () => {
       
-      //Listening to public announcements.
-      // stompClient.subscribe('/chat/publicmessages', (data) => {
-      //     console.log(`Public message: ${data.body}`);
-      // });
-
       /// private messaging
       console.log(`listening chatid ${chatIdRef.current}`);
       stompClient.subscribe(`/user/${chatIdRef.current}/queue/inboxmessages`, (data) => {
 
-          console.log("Hey we got a message!");
+          let newdata = JSON.parse(data.body);
+          
+          console.log(newdata.content.chatId);
 
-          let newdata= JSON.parse(data.body);
-          if(newdata.content.role == "Customer_Service" || newdata.current.role == "ADMIN")
+          if(newdata.content != null)
           {
-            // Disables the bot from responding
-            setDisableBot(true);
-            console.log(newdata);
-            // Updates the chathistory (the messages you can see)
-            setChatHistory(prevChatHistory => [
-              ...prevChatHistory,
-                { type: 'response', text: newdata.content.message, bot: false }
-              ]);
 
-              logMessage({id: newdata.content.user_id, username:"BOT", email: "BOT"}, "Customer Service", newdata.content.message);
+            if(newdata.content.role == "ADMIN" || newdata.content.role == "Customer_Service")
+              {
 
+                console.log(`So we've passed the check..`);
+                // Disables the bot from responding
+                setDisableBot(true);
+                // Updates the chathistory (the messages you can see)
+                setChatHistory(prevChatHistory => [
+                  ...prevChatHistory,
+                    { type: 'response', text: newdata.content.message, bot: false }
+                  ]);
+    
+                  logMessage({id: newdata.content.user_id, username:"BOT", email: "BOT"}, "Customer Service", newdata.content.message);
+              }
           }
 
           
+
       });
   };
 
@@ -193,12 +194,12 @@ function ChatbotPage({userInfo, trigger}) {
 
     // Checks if this is the first message which has been sent 
     // Used to initiate the chatlogging!
-    console.log(userInfo);
+    console.log("OK, we're trying to send a message");
 
     if(chatHistory.length <= 2)
     {
       // Only triggers when initiating the convo
-      console.log(userInfo.current.token);
+      //console.log(userInfo.current.token);
       try {
         console.log(`Current user id: ${userInfo.current.id}`);
 
@@ -268,10 +269,16 @@ function ChatbotPage({userInfo, trigger}) {
               ...prevChatHistory,
               { type: 'response', text: botResponse, bot: true }
             ]);
-          logMessage({id: userInfo.current.id, username:"shelson", email: "shelson@gmail.com"}, "Customer", message);
+            //console.log("So were logging this message as the bot isnt disabled yet!");
+            logMessage({id: userInfo.current.id, username:"shelson", email: "shelson@gmail.com"}, "Customer", message);
             
             logMessage({id: botId, username:"BOT", email: "BOT"}, "BOT", botResponse);
 
+        }
+        else
+        {
+          //console.log("Oh so now the bot has been disabled which means we are NOT logging messages atm.");
+          logMessage({id: userInfo.current.id, username:"shelson", email: "shelson@gmail.com"}, "Customer", message);
         }
         
 
