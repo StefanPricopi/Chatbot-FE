@@ -16,7 +16,7 @@ function App() {
   const userInfo = useRef({id:0, token: ""});
 
   const handleLogin = (username, password) => {
-    AuthAPI.login(username, password)
+    AuthAPI.dashLogin(username, password)
       .catch(() => alert("Login failed!"))
       .then(claims => {
         setClaims(claims);

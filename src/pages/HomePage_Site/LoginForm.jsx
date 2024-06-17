@@ -9,11 +9,11 @@ export default function LoginForm({ setIs2FARequired, setUsername }) {
     const handleLogin = (e) => {
         e.preventDefault();
 
-        AuthAPI.login("hhh", "hhh")
+        AuthAPI.login(localUsername,pwd)
             .then(response => {
                 console.log("Tried logging in.");
-                setIs2FARequired(true); // Trigger 2FA form
-                setUsername(localUsername);  // Pass username to parent component
+                setIs2FARequired(true); 
+                setUsername(localUsername);
             })
             .catch(e => {
                 console.error("Unauthorized");

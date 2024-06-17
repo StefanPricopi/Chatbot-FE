@@ -17,7 +17,7 @@ export default function LoginDashboard({handleLogin}) {
         {   
             handleLogin(username, password);
 
-            AuthAPI.login(username, password)
+            AuthAPI.dashLogin(username, password)
             .then(data => {
                 navigate("/logs");
             })
