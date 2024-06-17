@@ -166,7 +166,7 @@ function ChatbotPage({userInfo, trigger}) {
       };
 
 
-      console.log(payload);
+      //console.log(payload);
 
       LogsApi.logMessage(
         payload, userInfo.current.token)
@@ -208,14 +208,14 @@ function ChatbotPage({userInfo, trigger}) {
 
     // Checks if this is the first message which has been sent 
     // Used to initiate the chatlogging!
-    console.log("OK, we're trying to send a message");
+    //console.log("OK, we're trying to send a message");
 
     if(chatHistory.length <= 2)
     {
       // Only triggers when initiating the convo
       //console.log(userInfo.current.token);
       try {
-        console.log(`Current user id: ${userInfo.current.id}`);
+        //console.log(`Current user id: ${userInfo.current.id}`);
 
       const res = await LogsApi.createChat({
         user_id: userInfo.current.id,
@@ -223,7 +223,7 @@ function ChatbotPage({userInfo, trigger}) {
         dateTime: ""
       }, userInfo.current.token);
 
-      console.log(`Alright, started new chat on ${res.chat_id}`);
+      //console.log(`Alright, started new chat on ${res.chat_id}`);
       chatIdRef.current = res.chat_id;
 
       try {
