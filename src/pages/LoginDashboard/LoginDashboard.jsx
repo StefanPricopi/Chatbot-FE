@@ -19,13 +19,13 @@ export default function LoginDashboard({handleLogin}) {
                 
         try
         {   
-            const t = handleLogin(username, password);
-            console.log(t);
-            if(t)
-            {
+            handleLogin(username, password);
+
+            AuthAPI.dashLogin(username, password)
+            .then(data => {
                 navigate("/logs");
-            }
-    
+            })
+
             //handleLogin(username, password);
         }   
         catch(e)
@@ -37,6 +37,7 @@ export default function LoginDashboard({handleLogin}) {
             setUsername("");
             setPassword("");
         }
+
     }
 
     // useEffect(() => {

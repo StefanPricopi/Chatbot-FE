@@ -17,15 +17,11 @@ function App() {
 
   const handleLogin = (username, password) => {
     AuthAPI.dashLogin(username, password)
-    .catch(() => alert("Login failed!"))
-    .then(token => {
-        TokenManager.setAccessToken(token.data.accessToken);
-        setClaims(TokenManager.getClaims());
-        let localclaims = TokenManager.getClaims();
-        userInfo.current = {id: localclaims.studentId, token: token.data.accessToken};
-        console.log(userInfo);
+    .then(claims => {
+        console.log(claims);
+        setClaims(claims);
+        userInfo.current = {id: claims.studentId, token: TokenManager.getAccessToken(), role: claims.roles[0]};
         setAuthorized(true);
-        done = true;
     })
     .catch(error => console.error(error));
 
@@ -38,10 +34,8 @@ function App() {
         let claims = TokenManager.getClaims();
 
         if (currtoken == null || claims == null) {
-            console.log("Ohh no we're logged out");
             handleLogout();
         } else {
-            console.log("We are logged in apparently");
             setAuthorized(true);
             console.log(authorized);
             userInfo.current = { id: claims.studentId, token: currtoken, role: claims.roles[0] };
@@ -69,9 +63,6 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/login" element={<LoginDashboard handleLogin={handleLogin} />} />
-                    {console.log(`is authorized: ${authorized}`)}
-                    {console.log(`our role: ${userInfo.current.role}`)}
-                    {console.log(`is admin: ${userInfo.current.role == "ADMIN"}`)}
                     <Route path="/home" element={authorized && userInfo.current.role === "ADMIN" ? <HomePage /> : <Navigate to="/login" />} />
                     <Route path="/logs" element={authorized && userInfo.current.role === "ADMIN" ? <LogsPage userInfo={userInfo.current} /> : <Navigate to="/login" />} />
                     <Route path="/statistics" element={authorized && userInfo.current.role === "ADMIN" ? <StatisticsPage userInfo={userInfo.current} /> : <Navigate to="/statistics" />} />
