@@ -18,7 +18,7 @@ function App() {
   const handleLogin = (username, password) => {
     AuthAPI.dashLogin(username, password)
     .then(claims => {
-        console.log(claims);
+        //console.log(claims);
         setClaims(claims);
         userInfo.current = {id: claims.studentId, token: TokenManager.getAccessToken(), role: claims.roles[0]};
         setAuthorized(true);
@@ -28,7 +28,6 @@ function App() {
     };
 
     useEffect(() => {
-        console.log("Hits here first.");
 
         let currtoken = TokenManager.getAccessToken();
         let claims = TokenManager.getClaims();
@@ -37,9 +36,7 @@ function App() {
             handleLogout();
         } else {
             setAuthorized(true);
-            console.log(authorized);
             userInfo.current = { id: claims.studentId, token: currtoken, role: claims.roles[0] };
-            console.log(userInfo.current);
           }
         isLoading(false);
         

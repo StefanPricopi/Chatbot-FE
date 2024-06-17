@@ -46,7 +46,7 @@ export default function LogsPage(userInfo) {
   }, []);
 
   useEffect(() => {
-    console.log("Visited");
+    //console.log("Visited");
   }, [chatLogs, filteredLogs, chatsFilter]);
 
 

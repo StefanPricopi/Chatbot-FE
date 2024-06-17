@@ -23,7 +23,7 @@ export default function LoginDashboard({handleLogin}) {
 
             AuthAPI.dashLogin(username, password)
             .then(data => {
-                navigate("/logs");
+                navigate("/home");
             })
 
             //handleLogin(username, password);
