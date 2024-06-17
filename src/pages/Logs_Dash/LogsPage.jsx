@@ -4,6 +4,9 @@ import ChatlogItem from './components/Chatlog_item';
 import LogApi from '../../api/LogsApi';
 import Chatwindow from './components/Chatwindow';
 import NavBar from '../../components/NavBar'
+import TokenManager from '../../api/TokenManager';
+import { Client } from "@stomp/stompjs";
+
 
 
 export default function LogsPage(userInfo) {
@@ -13,11 +16,39 @@ export default function LogsPage(userInfo) {
   const [displayChat, SetDisplayChat] = useState(false);
   const [chatId, SetChatId] = useState(0);
   const [chatsFilter, setChatsFilter] = useState("");
+  const [liveChatNr, setLiveChatNr] = useState(0);
+
+  const [stompClient, setStompClient] = useState(null);
 
 
   useEffect(() => {
+
+    const stompCL = new Client({
+      brokerURL: 'ws://localhost:8080/ws', 
+      reconnectDelay: 5000, 
+      heartbeatIncoming: 4000, 
+      heartbeatOutgoing: 4000
+    });
+
+    stompCL.onConnect = () => {
+      stompCL.subscribe('/chat/publicmessages', (d) => {
+        let msg = JSON.parse(d.body);
+        setLiveChatNr(msg.content.chatId);
+
+        getAllLogs();
+      });
+    };
+
+    stompCL.activate();
+    setStompClient(stompCL);
+
     getAllLogs();
   }, []);
+
+  useEffect(() => {
+    console.log("Visited");
+  }, [chatLogs, filteredLogs, chatsFilter]);
+
 
 
   const getAllLogs = () => 
@@ -33,7 +64,7 @@ export default function LogsPage(userInfo) {
         SetChatlogs(resp.allChats);
       }
       
-      console.log(resp.allChats);
+      //console.log(resp.allChats);
     })
     .catch(err => {
       console.error(err);
@@ -42,23 +73,18 @@ export default function LogsPage(userInfo) {
 
 
   const filterLog = chatLogs.filter((log) => {
-    if(filteredLogs=="all")
-    {
-      return true;
-    }
-    else if(filteredLogs == "solved")
-    {
-      return log.hasBeenSolved == true;
-    }
-    else if(filteredLogs == "unsolved")
-    {
-      return log.hasBeenSolved == false;
-    }
+
+    const matchesFilter = filteredLogs === "all" ||
+      (filteredLogs == "solved" && log.hasBeenSolved) ||
+      (filteredLogs == "unsolved" && !log.hasBeenSolved);
+
+    const matchesSearch = chatsFilter === "" || log.id.toString().includes(chatsFilter);
+
+    return matchesFilter && matchesSearch;
   });
 
   const showChat = (chat_id = 0) => 
   {
-    console.log("Got triggerd");
     SetChatId(chat_id);
     SetDisplayChat(prevDisplayChat => !prevDisplayChat);
   }
@@ -72,13 +98,13 @@ export default function LogsPage(userInfo) {
     	        <h2 className={styles.title}>Chatlogs</h2>
 
 
-                {displayChat ? <Chatwindow displayChat={showChat} chatId={chatId} userInfo={userInfo.userInfo}/> : null}
+                {displayChat ? <Chatwindow displayChat={showChat} chatId={chatId} userInfo={userInfo.userInfo} refreshList={() => {getAllLogs()}}/> : null}
 
                 <div className={styles.log_section}>
                   {/* This is the main container of the different logs.. */}
                   
                   <div className={styles.log_search_togglegroup}>
-                    <input type="search" className={styles.log_searchbar} value={chatsFilter} onChange={setChatsFilter}/>
+                    <input type="search" className={styles.log_searchbar} value={chatsFilter} onChange={(e) => setChatsFilter(e.target.value)}/>
 
                     <input type="radio" onChange={()=> SetFilteredLogs("unsolved")} checked={filteredLogs === "unsolved"} id="unsolved" name="toggle" value="unsolved"/>
                     <label htmlFor="unsolved">Unsolved</label>
@@ -93,7 +119,7 @@ export default function LogsPage(userInfo) {
                   
                   <div className={styles.log_container}>
                     {filterLog.map((i) => (
-                      <ChatlogItem key={i.id} chatId={i.id} refreshList={() => {getAllLogs()}} displayChat={showChat} userInfo={userInfo.userInfo}/>
+                      <ChatlogItem key={i.id} chatId={i.id} refreshList={() => {getAllLogs()}} displayChat={showChat} userInfo={userInfo.userInfo} isLive={(i.id == liveChatNr)}/>
                     ))}
                   </div>
 

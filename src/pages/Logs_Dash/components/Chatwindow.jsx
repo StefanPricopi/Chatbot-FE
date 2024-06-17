@@ -3,19 +3,36 @@ import styles from '../styling/Chatwindow.module.css'
 import LogsApi from '../../../api/LogsApi';
 import { v4 as uuidv4 } from 'uuid';
 import { Client } from "@stomp/stompjs";
+import TokenManager from '../../../api/TokenManager';
 
-export default function Chatwindow({displayChat, chatId, userInfo}) {
+export default function Chatwindow({displayChat, chatId, userInfo, refreshList}) {
 
     const [chatInfo, SetChatInfo] = useState({});
     const [user, setUser] = useState();
     const [stompClient, setStompClient] = useState(null);
     const [liveMsg, setLiveChat] = useState("");    
-
+    const [solved, isSolved] = useState(false);
 
     const [messages, setMessages] = useState([]);
 
+    const setStyleBasedOnRole = (role) => 
+    {
+        switch(role.toLowerCase())
+        {
+            case "customer":
+                return styles.chat_msg_C
+            case "customer Service":
+                return styles.chat_msg_CS
+            case "admin":
+                return styles.chat_msg_CS
+            case "bot":
+                return styles.chat_msg_BOT
+        }
+    }
+
     useEffect(()=>{
         fetchChat();
+
 
         /* Websocketery !*/
         const stompClient = new Client({
@@ -38,7 +55,7 @@ export default function Chatwindow({displayChat, chatId, userInfo}) {
                 
 
                 fetchChat();
-                //console.log(`Private message: ${data.body}`);
+                console.log(`Private message: ${data.body}`);
             });
         };
 
@@ -48,17 +65,36 @@ export default function Chatwindow({displayChat, chatId, userInfo}) {
 
     }, []);
 
+    const logChat = () => 
+    {
+        // 
+        //console.log(userInfo);
+        console.log("So our chat ID: " + chatId);
+        console.log(liveMsg);
+
+        let payload = {
+        chat_id: chatId,
+        message: {
+          user_id: userInfo.id,
+          message:liveMsg
+        }
+      };
+
+        //LogsApi.logMessage(payload, userInfo.token);
+    }
+
+
     const sendMessage = (e) => 
     {
         e.preventDefault();
-        console.log(chatInfo.createdBy.roles[0]);
-        console.log(chatInfo);
+        //console.log(chatInfo.createdBy.roles[0]);
+        //console.log(chatInfo);
 
 
         if(stompClient != null)
         {
-
-            let payload = {"chatId": chatId, "message":liveMsg, "role": "Customer_Service", disableBot: true};
+            console.log(userInfo);
+            let payload = {"chatId": chatId, "message":liveMsg, "user_id": userInfo.id, "role": [`${userInfo.role}`], disableBot: true};
 
             /// Public messaging (maybe for later)
             // stompClient.publish({
@@ -76,6 +112,7 @@ export default function Chatwindow({displayChat, chatId, userInfo}) {
 
             setLiveChat('');
             fetchChat();
+            logChat();
         }
         else
         {
@@ -88,6 +125,7 @@ export default function Chatwindow({displayChat, chatId, userInfo}) {
         LogsApi.getChat(chatId, userInfo.token)
         .then(resp => {
             SetChatInfo(resp);
+            isSolved(resp.hasBeenSolved);
         })
         .catch(err => {
             console.error(err);
@@ -107,6 +145,20 @@ export default function Chatwindow({displayChat, chatId, userInfo}) {
         }
     }
 
+    const updateStatus = (stat) => 
+    {
+        
+        let payload = {chatId: chatId, status: stat};
+
+        LogsApi.updateStatus(payload, TokenManager.getAccessToken())
+        .then(() => {
+            console.log("Ok, status change is on its way");
+            refreshList();
+        });
+        
+        isSolved(prev => !prev);
+    }
+
   return (
     <div className={styles.chat_window}>
         {/* 
@@ -122,32 +174,31 @@ export default function Chatwindow({displayChat, chatId, userInfo}) {
 
         <div className={styles.chat_box_top} >
             {/* Toggle switch for setting the ticket/problem solved or not. */}
+            <label>Has been solved: </label>
+            <button onClick={() => {updateStatus(!solved)}} className={solved ? styles.isSolved : styles.notSolved}>{solved ? "Solved" : "Unsolved"}</button>
         </div>
 
         <div className={styles.chat_box}>
-            {/* Main section where the chats are displayed */}
-            {chatInfo.messages != null && chatInfo.messages.role != ""? chatInfo.messages.map((i) => (
-                <div key={i.message} className={i.sendBy.roles[0] == "Customer Service" ? styles.chat_msg_CS : styles.chat_msg_C}>
-                    <div className={i.sendBy.roles[0] == "Customer Service" ? styles.msg_icon_CS : styles.msg_icon_C}>
-                        {/* {console.log(i.sendBy.roles)} */}
+            {/* Main section where the chats are displayed 
+            */}
+            {chatInfo.messages != null ? chatInfo.messages.map((i) => (
+                <div key={i.id} className={setStyleBasedOnRole(i.sendByDTO.roles[0])}>
+                    <div className={setStyleBasedOnRole(i.sendByDTO.roles[0])}>
                     </div>
                     <div>
                         <p>{i.message != null ? i.message : "empty"}</p>
                     </div>
                 </div>
-                    
             )) : null}
             
         </div>
 
         <div className={styles.sub_box}>
             {/* Secondaire section which contains the information + a button which can be used to join the convo. */}
-            
             <form>
                 <input className={styles.chat_inputfield} type="text" value={liveMsg} onChange={(e) => {setLiveChat(e.target.value)}} autoFocus />
                 <input className={styles.chat_inputfield_btn} type="submit" onClick={sendMessage}/>
             </form>
-                        
         </div>
 
 

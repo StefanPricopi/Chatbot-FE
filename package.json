@@ -12,19 +12,22 @@
   "dependencies": {
     "@stomp/stompjs": "^7.0.0",
     "axios": "^1.6.8",
+    "chart.js": "^4.4.3",
     "jwt-decode": "^4.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.23.0",
+    "react-router-dom": "^6.23.1",
     "sockjs": "^0.3.24",
     "sockjs-client": "^1.6.1",
-    "stomp": "^0.1.1",
-    "uuidv4": "^6.2.13"
+    "uuid": "^9.0.1",
+    "uuidv4": "^6.2.13",
+    "ws": "^8.17.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@vitejs/plugin-react": "^4.2.1",
+    "cypress": "^13.9.0",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",

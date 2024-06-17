@@ -4,6 +4,8 @@ import minimizeIcon from '../../components/images/minimize-icon-3.png';
 import openIcon from '../../components/images/chat2.png'; 
 import LogsApi from '../../api/LogsApi';
 import style from "./ChatbotPage.module.css";
+import CustomEmojiPicker from './emoji_comp/CustomEmojiPicker.jsx';
+
 import { Client } from "@stomp/stompjs";
 
 
@@ -15,17 +17,16 @@ function ChatbotPage({userInfo, trigger}) {
   const [disableBot, setDisableBot] = useState(false);
   const [stompClient, setStompClient] = useState(null);
 
+  // This is a big no no! :'|
+  const [botId, setBotId] = useState(10031);
+
 
   // Going to do this without state as it doesn't directly update the state when called. 
 
   useEffect(() => {
 
-    console.log(`Info we got: ${userInfo.current.id}`);
+    //console.log(`Info we got: ${userInfo.current.id}`);
     chatIdRef.current = userInfo.current.id
-
-
-    console.log(userInfo);
-
 
     sendWelcomeMessage();
 
@@ -49,32 +50,35 @@ function ChatbotPage({userInfo, trigger}) {
 
   stompClient.onConnect = () => {
       
-      //Listening to public announcements.
-      // stompClient.subscribe('/chat/publicmessages', (data) => {
-      //     console.log(`Public message: ${data.body}`);
-      // });
-
       /// private messaging
       console.log(`listening chatid ${chatIdRef.current}`);
       stompClient.subscribe(`/user/${chatIdRef.current}/queue/inboxmessages`, (data) => {
 
-          let newdata= JSON.parse(data.body);
-          if(newdata.content.role == "Customer_Service")
+          let newdata = JSON.parse(data.body);
+          
+          console.log(newdata.content.chatId);
+
+          if(newdata.content != null)
           {
-            // Disables the bot from responding
-            setDisableBot(true);
 
-            // Updates the chathistory (the messages you can see)
-            setChatHistory(prevChatHistory => [
-              ...prevChatHistory,
-                { type: 'response', text: newdata.content.message, bot: false }
-              ]);
+            if(newdata.content.role == "ADMIN" || newdata.content.role == "Customer_Service")
+              {
 
-              logMessage({id: 0, username:"BOT", email: "BOT"}, "Customer Service", newdata.content.message);
-
+                console.log(`So we've passed the check..`);
+                // Disables the bot from responding
+                setDisableBot(true);
+                // Updates the chathistory (the messages you can see)
+                setChatHistory(prevChatHistory => [
+                  ...prevChatHistory,
+                    { type: 'response', text: newdata.content.message, bot: false }
+                  ]);
+    
+                  logMessage({id: newdata.content.user_id, username:"BOT", email: "BOT"}, "Customer Service", newdata.content.message);
+              }
           }
 
           
+
       });
   };
 
@@ -111,19 +115,16 @@ function ChatbotPage({userInfo, trigger}) {
         },
         body: JSON.stringify({ message }),
       });
-      
-
+  
       if (!response.ok) {
         throw new Error('Failed to get chatbot response');
       }
       
       const contentType = response.headers.get("content-type");
       if (contentType && contentType.indexOf("application/json") !== -1) {
-        
         const data = await response.json();
         return data.response;
       } else {
-       
         return await response.text();
       }
     } catch (error) {
@@ -134,21 +135,27 @@ function ChatbotPage({userInfo, trigger}) {
 
   const logMessage = async(user, role, msg) => 
   {
+
+    const date_stamp = new Date().toISOString();
+    
+
+
     if(chatIdRef.current > 0)
     {
+
+      let payload = {
+        chat_id: chatIdRef.current,
+        message: {
+          user_id: user.id,
+          message:msg
+        }
+      };
+
+
+      console.log(payload);
+
       LogsApi.logMessage(
-        {
-          chat_id: chatIdRef.current,
-          message: {
-            sendBy: {
-              userId:user.id,
-              userName: user.username,
-              email: user.email, 
-              roles: [role]
-            },
-            message: msg
-          }
-        }, userInfo.current.token)
+        payload, userInfo.current.token)
         .catch(err => {
           console.error(`Oh no something went wrong: ${err}`);
         });
@@ -167,28 +174,37 @@ function ChatbotPage({userInfo, trigger}) {
     }
   }
 
+  const updateCS = () => {
+    // This will send a ping to the logs page. 
+    // It will refresh the list + add a status for the chat which is active. 
+
+    let payload = {"chatId": chatIdRef.current};
+    
+    console.log("Sending ping!");
+
+    const destination = `/chat/publicmessages`;
+    stompClient.publish({
+        destination: destination, 
+        body: JSON.stringify({content: payload})
+    });
+}
+
   const sendMessage = async () => {
 
 
     // Checks if this is the first message which has been sent 
     // Used to initiate the chatlogging!
-    console.log(userInfo);
+    console.log("OK, we're trying to send a message");
 
     if(chatHistory.length <= 2)
     {
       // Only triggers when initiating the convo
-      console.log(userInfo.current.token);
+      //console.log(userInfo.current.token);
       try {
         console.log(`Current user id: ${userInfo.current.id}`);
 
         const res = await LogsApi.createChat({
-          sendBy: {
-            /// This is mock data should be binded with Authentication later on!
-            userId: userInfo.current.id, 
-            username: "", 
-            email: "", 
-            roles: ["Customer"]
-          },
+          user_id: userInfo.current.id,
           message: message, 
           dateTime: ""
         }, userInfo.current.token);
@@ -199,7 +215,8 @@ function ChatbotPage({userInfo, trigger}) {
         try
         {
           setupWebsocketry();
-          
+          // After the first message it sends this ping. 
+          updateCS();
         }
         catch(e)
         {
@@ -220,8 +237,7 @@ function ChatbotPage({userInfo, trigger}) {
             { type: 'response', text: botResponse, bot: true }
           ]);
             
-
-        logMessage({id: 0, username:"BOT", email: "BOT"}, "Customer Service", botResponse);
+        logMessage({id: botId, username:"BOT", email: "BOT"}, "BOT", botResponse);
         
 
       } catch (error) {
@@ -253,16 +269,23 @@ function ChatbotPage({userInfo, trigger}) {
               ...prevChatHistory,
               { type: 'response', text: botResponse, bot: true }
             ]);
-          logMessage({id: 0, username:"BOT", email: "BOT"}, "Customer Service", botResponse);
+            //console.log("So were logging this message as the bot isnt disabled yet!");
+            logMessage({id: userInfo.current.id, username:"shelson", email: "shelson@gmail.com"}, "Customer", message);
+            
+            logMessage({id: botId, username:"BOT", email: "BOT"}, "BOT", botResponse);
 
         }
-        
+        else
+        {
+          //console.log("Oh so now the bot has been disabled which means we are NOT logging messages atm.");
           logMessage({id: userInfo.current.id, username:"shelson", email: "shelson@gmail.com"}, "Customer", message);
+        }
+        
 
 
         // Dit update ook direct de chat!
         sendWebsocketMsg();
-
+        updateCS();
         setMessage('');
 
         
@@ -338,6 +361,8 @@ function ChatbotPage({userInfo, trigger}) {
 
 
           <div className={styles.messageInput}>
+            {/* <CustomEmojiPicker /> */}
+
             <input
               type="text"
               className={styles.inputField}
@@ -345,7 +370,7 @@ function ChatbotPage({userInfo, trigger}) {
               value={message}
               onChange={handleMessageChange}
               onKeyDown={submitViaField}
-            />
+              autoFocus/>
             <button className={styles.sendButton} onClick={sendMessage} >Send</button>
           </div>
         </div>

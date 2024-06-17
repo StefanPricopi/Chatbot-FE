@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import FAQApi from '../api/FAQApi';
 import styles from './HomePage.module.css';
-import NavBar from '../components/NavBar'
+import NavBar from '../components/NavBar';
+import { Link } from 'react-router-dom';
 
 export default function HomePage() {
     const [FAQs, setFAQs] = useState([]);
@@ -12,6 +13,9 @@ export default function HomePage() {
     const [updatedFAQQuestion, setUpdatedFAQQuestion] = useState('');
     const [updatedFAQAnswer, setUpdatedFAQAnswer] = useState('');
     const [updatedFAQCategory, setUpdatedFAQCategory] = useState('');
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const FAQsPerPage = 4;
 
     useEffect(() => {
         fetchFAQs();
@@ -69,6 +73,12 @@ export default function HomePage() {
             });
     };
 
+    const indexOfLastFAQ = currentPage * FAQsPerPage;
+    const indexOfFirstFAQ = indexOfLastFAQ - FAQsPerPage;
+    const currentFAQs = FAQs.slice(indexOfFirstFAQ, indexOfLastFAQ);
+
+    const paginate = pageNumber => setCurrentPage(pageNumber);
+
     return (
         <div className={styles.container}>
             <NavBar />
@@ -81,50 +91,79 @@ export default function HomePage() {
                     <img src="./dashboard.webp" alt="Dashboard" className={styles.headerImage} />
                 </div>
             </header>
-            <section className={styles.section}>
-                <p className={styles.FAQCrud}>FAQs CRUD:</p>
-                <ul className={styles.FAQList}>
-                    {FAQs && FAQs.map((faq, index) => (
-                        <li key={faq.faqid} className={styles.faqItem}>
+            <section className={styles.mainSection}>
+                <div className={styles.FAQContainer}>
+                    <p className={styles.FAQCrud}>FAQs CRUD:</p>
+                    <ul className={styles.FAQList}>
+                        {currentFAQs.map((faq, index) => (
+                            <li key={faq.faqid} className={styles.faqItem}>
                                 {editingFAQId === faq.faqid ? (
                                     <div className={styles.editingContainer}>
-                                    <input
-                                        type="text"
-                                        value={updatedFAQQuestion}
-                                        onChange={e => setUpdatedFAQQuestion(e.target.value)}
-                                        className={styles.input}
-                                    />
-                                    <input
-                                        type="text"
-                                        value={updatedFAQAnswer}
-                                        onChange={e => setUpdatedFAQAnswer(e.target.value)}
-                                        className={styles.input}
-                                    />
-                                    <input
-                                        type="text"
-                                        value={updatedFAQCategory}
-                                        onChange={e => setUpdatedFAQCategory(e.target.value)}
-                                        className={styles.input}
-                                    />
-                                    <button onClick={() => updateFAQ(faq.faqid)} className={styles.button}>Save</button>
-                                </div>
-                            ) : (
-                                <div>
-                                    <p>Question: {faq.question}</p>
-                                    <p>Answer: {faq.answer}</p>
-                                    <p>Category: {faq.category}</p>
-                                    <button onClick={() => deleteFAQ(faq.faqid)} className={styles.button}>Delete</button>
-                                    <button onClick={() => {
-                                        setEditingFAQId(faq.faqid);
-                                        setUpdatedFAQQuestion(faq.question);
-                                        setUpdatedFAQAnswer(faq.answer);
-                                        setUpdatedFAQCategory(faq.category);
-                                    }} className={styles.button}>Edit</button>
-                                </div>
-                            )}
-                        </li>
-                    ))}
-                </ul>
+                                        <input
+                                            type="text"
+                                            value={updatedFAQQuestion}
+                                            onChange={e => setUpdatedFAQQuestion(e.target.value)}
+                                            className={styles.input}
+                                        />
+                                        <input
+                                            type="text"
+                                            value={updatedFAQAnswer}
+                                            onChange={e => setUpdatedFAQAnswer(e.target.value)}
+                                            className={styles.input}
+                                        />
+                                        <input
+                                            type="text"
+                                            value={updatedFAQCategory}
+                                            onChange={e => setUpdatedFAQCategory(e.target.value)}
+                                            className={styles.input}
+                                        />
+                                        <button onClick={() => updateFAQ(faq.faqid)} className={styles.button}>Save</button>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <p>Question: {faq.question}</p>
+                                        <p>Answer: {faq.answer}</p>
+                                        <p>Category: {faq.category}</p>
+                                        <button onClick={() => deleteFAQ(faq.faqid)} className={styles.button}>Delete</button>
+                                        <button onClick={() => {
+                                            setEditingFAQId(faq.faqid);
+                                            setUpdatedFAQQuestion(faq.question);
+                                            setUpdatedFAQAnswer(faq.answer);
+                                            setUpdatedFAQCategory(faq.category);
+                                        }} className={styles.button}>Edit</button>
+                                    </div>
+                                )}
+                            </li>
+                        ))}
+                    </ul>
+                    <div className={styles.pagination}>
+                        <button
+                            onClick={() => paginate(currentPage - 1)}
+                            className={styles.arrow}
+                            disabled={currentPage === 1}
+                        >
+                            &laquo;
+                        </button>
+                        {[...Array(Math.ceil(FAQs.length / FAQsPerPage)).keys()].map(number => (
+                            <button
+                                key={number + 1}
+                                onClick={() => paginate(number + 1)}
+                                className={`${styles.pageButton} ${currentPage === number + 1 ? styles.active : ''}`}
+                            >
+                                {number + 1}
+                            </button>
+                        ))}
+                        <button
+                            onClick={() => paginate(currentPage + 1)}
+                            className={styles.arrow}
+                            disabled={currentPage === Math.ceil(FAQs.length / FAQsPerPage)}
+                        >
+                            &raquo;
+                        </button>
+                    </div>
+                </div>
+            </section>
+            <section className={styles.addFAQContainer}>
                 <h2>Add New FAQ</h2>
                 <div>
                     <input
@@ -156,9 +195,10 @@ export default function HomePage() {
                 <div>
                     <button onClick={addFAQ} className={styles.button}>Add</button>
                 </div>
-                </section>
+            </section>
             <footer className={styles.footer}>
                 <p>© Copyright 2024 Hustle & Hack Harmony</p>
+                <Link to="/statistics" className={styles.button}>View Statistics</Link>
             </footer>
         </div>
     );
