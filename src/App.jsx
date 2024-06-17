@@ -62,7 +62,7 @@ function App() {
                     <Route path="/login" element={<LoginDashboard handleLogin={handleLogin} />} />
                     <Route path="/home" element={authorized && userInfo.current.role === "ADMIN" ? <HomePage /> : <Navigate to="/login" />} />
                     <Route path="/logs" element={authorized && userInfo.current.role === "ADMIN" ? <LogsPage userInfo={userInfo.current} /> : <Navigate to="/login" />} />
-                    <Route path="/statistics" element={authorized && userInfo.current.role === "ADMIN" ? <StatisticsPage userInfo={userInfo.current} /> : <Navigate to="/statistics" />} />
+                    <Route path="/statistics" element={authorized && userInfo.current.role === "ADMIN" ? <StatisticsPage userInfo={userInfo.current} /> : <Navigate to="/login" />} />
                     <Route path="*" element={<Navigate to="/login" />} />
                 </Routes>
             </Router>

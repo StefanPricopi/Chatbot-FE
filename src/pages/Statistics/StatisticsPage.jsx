@@ -3,6 +3,7 @@ import FAQApi from '../../api/FAQApi';
 import styles from './StatisticsPage.module.css';
 import NavBar from '../../components/NavBar';
 import PieChart from '../../components/PieChart';
+import TokenManager from '../../api/TokenManager';
 
 export default function StatisticsPage() {
     const [FAQStatistics, setFAQStatistics] = useState([]);
@@ -15,6 +16,9 @@ export default function StatisticsPage() {
     useEffect(() => {
         fetchFAQStatistics();
         fetchOutOfOfficeChats();
+
+
+        // testing if this works
         fetchFailedQuestions();
         fetchRoutedChats();
         fetchChatsWithoutHuman();
@@ -46,9 +50,12 @@ export default function StatisticsPage() {
 
     const fetchFailedQuestions = async () => {
         try {
+            // Think I fixed something here not sure - Shelson
             const data = await FAQApi.getFailedQuestions();
+
             setFailedQuestions(data);
         } catch (error) {
+            console.log("Oh no");
             console.error('Error fetching failed questions:', error);
         }
     };
