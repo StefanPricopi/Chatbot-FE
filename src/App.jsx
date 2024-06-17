@@ -20,6 +20,9 @@ function App() {
       .catch(() => alert("Login failed!"))
       .then(claims => {
         setClaims(claims);
+
+        console.log(claims);
+
         userInfo.current = {id: claims.studentId, token: TokenManager.getAccessToken()};
 
 
@@ -58,25 +61,6 @@ function App() {
         </div>
     </div>
   )
-
-  return (
-    <div>
-      <h1>My App</h1>
-      {claims ? (
-        <div>
-          <p>Welcome, {claims.sub}</p>
-          {studentDetails &&
-            <StudentDetails studentDetails={studentDetails} />
-          }
-          <button onClick={handleLogout}>Logout</button>
-          <br />
-          <a href='/' target='_blank'>Open in new Tab</a>
-        </div>
-      ) : (
-        <LoginForm onLogin={handleLogin} />
-      )}
-    </div>
-  );
 
 }
 

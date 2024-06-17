@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styles from './styling/logindash.module.css';
 import AuthAPI from '../../api/AuthAPI';
 import TokenManager from '../../api/TokenManager';
+import { jwtDecode } from 'jwt-decode';
 
 export default function TwoFactorAuthForm({ username, setUserInfo }) {
     const [twoFactorCode, setTwoFactorCode] = useState("");
@@ -13,7 +14,12 @@ export default function TwoFactorAuthForm({ username, setUserInfo }) {
             .then(response => {
                 const { accessToken } = response;
                 TokenManager.setAccessToken(accessToken);
-                setUserInfo({ username, token: accessToken });
+                let claims = jwtDecode(accessToken);
+
+                console.log(claims);
+                setUserInfo({ id: claims.studentId, token: accessToken });
+                console.log(accessToken);
+                console.log("ok, so its successfull");
             })
             .catch(e => {
                 console.error("2FA verification failed", e);

@@ -13,6 +13,7 @@ export default function () {
   const setUserInfo = (user) => {
     authUser.current = {id: user.id, token: user.token}
     setTrigger(prevTrigger => !prevTrigger);
+    console.log(user);
     //console.log(`token: ${authUser.current.token}\nuserId: ${authUser.current.id}`);    
   }
 
