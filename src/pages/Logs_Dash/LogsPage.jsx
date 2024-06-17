@@ -23,6 +23,19 @@ export default function LogsPage(userInfo) {
   const getAllLogs = () => 
   {
 
+
+
+
+    
+    console.log("Userinfo test alex:  "+userInfo.userInfo.token);
+
+
+
+
+
+
+
+    
     LogApi.getAllChats(userInfo.userInfo.token)
     .then(resp => {
       //SetChatlogs(resp.allChats);

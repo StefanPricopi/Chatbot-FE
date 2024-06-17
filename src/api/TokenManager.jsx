@@ -13,6 +13,7 @@ const TokenManager = {
         return userData.claims;
     },
     setAccessToken: (token) => {
+
         userData.accessToken = token;
         const claims = jwtDecode(token);
         userData.claims = claims;

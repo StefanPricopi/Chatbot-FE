@@ -17,7 +17,7 @@ const AuthAPI = {
     },
     dashLogin:(username, password) => {
         return axios.post('http://localhost:8080/dashlogin', {username, password})
-            .then(response => response.data)
+            .then(response => response)
             .catch(error =>{
                 throw error;
             })
