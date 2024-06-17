@@ -296,6 +296,7 @@ function ChatbotPage({userInfo, trigger}) {
   
         logMessage({ id: userInfo.current.id, username: "shelson", email: "shelson@gmail.com" }, "Customer", message);
         logMessage({ id: botId, username: "BOT", email: "BOT" }, "BOT", botResponse);
+        
         }
         else
         {
