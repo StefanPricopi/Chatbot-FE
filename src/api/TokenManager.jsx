@@ -6,7 +6,6 @@ const userData = {
 }
 
 const TokenManager = {
-    getAccessToken: () => localStorage.getItem("accessToken"),
     getClaims: () => {
         if (!localStorage.getItem("claims")) {
             return undefined;
@@ -19,6 +18,7 @@ const TokenManager = {
         localStorage.setItem("claims", JSON.stringify(claims));
         return claims;
     },
+    getAccessToken: () => userData.accessToken,
     clear: () => {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("claims");

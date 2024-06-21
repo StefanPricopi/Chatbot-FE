@@ -1,10 +1,20 @@
-import axios from "axios";
-import TokenManager from "./TokenManager";
+import axios from 'axios';
 
 const AuthAPI = {
-    login: (username, password) => axios.post('http://localhost:8080/tokens', { username, password })
-        .then(response => response.data.accessToken)
-        .then(accessToken => TokenManager.setAccessToken(accessToken))
-}
+    login: (username, password) => {
+        return axios.post('http://localhost:8080/tokens', { username, password })
+            .then(response => response.data)
+            .catch(error => {
+                throw error;
+            });
+    },
+    verify2FA: (username, twoFactorCode) => {
+        return axios.post('http://localhost:8080/mail', { username, twoFactorCode })
+            .then(response => response.data)
+            .catch(error => {
+                throw error;
+            });
+    }
+};
 
 export default AuthAPI;
