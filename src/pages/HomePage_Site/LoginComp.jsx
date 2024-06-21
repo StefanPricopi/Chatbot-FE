@@ -3,7 +3,7 @@ import styles from './styling/logindash.module.css';
 import LoginForm from './LoginForm';
 import TwoFactorAuthForm from './TwoFactorAuthForm';
 
-export default function LoginDash({ setUserInfo }) {
+export default function LoginDash({ setUserInfo, displaySelf}) {
     const [is2FARequired, setIs2FARequired] = useState(false);
     const [username, setUsername] = useState("");
 
@@ -21,7 +21,7 @@ export default function LoginDash({ setUserInfo }) {
                 {!is2FARequired ? (
                     <LoginForm setIs2FARequired={setIs2FARequired} setUsername={setUsername} />
                 ) : (
-                    <TwoFactorAuthForm username={username} setUserInfo={setUserInfo} />
+                    <TwoFactorAuthForm username={username} setUserInfo={setUserInfo} onComplete={displaySelf}/>
                 )}
                 <hr className={styles.linebreak}></hr>
                 <p className={styles.ptxt}>Are you new to BAS World? </p>

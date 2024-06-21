@@ -1,9 +1,5 @@
 import { jwtDecode } from "jwt-decode";
 
-const userData = {
-    accessToken: undefined,
-    claims: undefined
-}
 
 const TokenManager = {
     getClaims: () => {
@@ -18,7 +14,7 @@ const TokenManager = {
         localStorage.setItem("claims", JSON.stringify(claims));
         return claims;
     },
-    getAccessToken: () => userData.accessToken,
+    getAccessToken: () => localStorage.getItem("accessToken"),
     clear: () => {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("claims");

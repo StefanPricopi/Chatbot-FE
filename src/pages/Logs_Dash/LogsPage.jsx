@@ -46,14 +46,17 @@ export default function LogsPage(userInfo) {
   }, []);
 
   useEffect(() => {
-
+    //console.log("Visited");
   }, [chatLogs, filteredLogs, chatsFilter]);
+
+
 
   const getAllLogs = () => 
   {
-    let token = TokenManager.getAccessToken();
-    //console.log(`Token we have currently:${token}`);
-    LogApi.getAllChats(token)
+
+    // console.log("Userinfo test alex:  "+userInfo.userInfo.token);
+    
+    LogApi.getAllChats(userInfo.userInfo.token)
     .then(resp => {
       //SetChatlogs(resp.allChats);
       if(resp.allChats != "")

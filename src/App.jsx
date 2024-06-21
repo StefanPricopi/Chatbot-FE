@@ -15,32 +15,35 @@ function App() {
     const [authorized, setAuthorized] = useState(false);
     const [loading, isLoading] = useState(true);
 
-    const handleLogin = (username, password) => {
-        AuthAPI.login(username, password)
-            .then(claims => {
-                setClaims(claims);
-                userInfo.current = { id: claims.studentId, token: TokenManager.getAccessToken(), role: claims.roles[0] };
-                setAuthorized(true);
-            })
-            .catch(error => {
-                console.error(error);
-                alert("Login failed!");
-            });
+  const handleLogin = (username, password) => {
+    AuthAPI.dashLogin(username, password)
+    .then(claims => {
+        //console.log(claims);
+        setClaims(claims);
+        userInfo.current = {id: claims.studentId, token: TokenManager.getAccessToken(), role: claims.roles[0]};
+        setAuthorized(true);
+    })
+    .catch(error => console.error(error));
+
     };
 
     useEffect(() => {
-        let token = TokenManager.getAccessToken();
+
+        let currtoken = TokenManager.getAccessToken();
         let claims = TokenManager.getClaims();
-        if (token == null || claims == null) {
+
+        if (currtoken == null || claims == null) {
             handleLogout();
         } else {
             setAuthorized(true);
-            userInfo.current = { id: claims.studentId, token: token, role: claims.roles[0] };
-        }
+            userInfo.current = { id: claims.studentId, token: currtoken, role: claims.roles[0] };
+          }
         isLoading(false);
+        
     }, []);
 
     const handleLogout = () => {
+        console.log("we have logged out");
         TokenManager.clear();
         setClaims(null);
         userInfo.current = {};
@@ -59,12 +62,13 @@ function App() {
                     <Route path="/login" element={<LoginDashboard handleLogin={handleLogin} />} />
                     <Route path="/home" element={authorized && userInfo.current.role === "ADMIN" ? <HomePage /> : <Navigate to="/login" />} />
                     <Route path="/logs" element={authorized && userInfo.current.role === "ADMIN" ? <LogsPage userInfo={userInfo.current} /> : <Navigate to="/login" />} />
-                    <Route path="/statistics" element={authorized && userInfo.current.role === "ADMIN" ? <StatisticsPage userInfo={userInfo.current} /> : <Navigate to="/statistics" />} />
+                    <Route path="/statistics" element={authorized && userInfo.current.role === "ADMIN" ? <StatisticsPage userInfo={userInfo.current} /> : <Navigate to="/login" />} />
                     <Route path="*" element={<Navigate to="/login" />} />
                 </Routes>
             </Router>
         </div>
-    );
+  )
+
 }
 
 export default App;

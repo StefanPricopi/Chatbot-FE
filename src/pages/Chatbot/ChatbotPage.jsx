@@ -166,7 +166,7 @@ function ChatbotPage({userInfo, trigger}) {
       };
 
 
-      console.log(payload);
+      //console.log(payload);
 
       LogsApi.logMessage(
         payload, userInfo.current.token)
@@ -203,16 +203,19 @@ function ChatbotPage({userInfo, trigger}) {
     });
 }
 
-const sendMessage = async () => {
-  // Check if this is the first message which has been sent
-  // Used to initiate the chat logging
-  console.log(userInfo);
+  const sendMessage = async () => {
 
-  if (chatHistory.length <= 2) {
-    // Only triggers when initiating the conversation
-    console.log(userInfo.current.token);
-    try {
-      console.log(`Current user id: ${userInfo.current.id}`);
+
+    // Checks if this is the first message which has been sent 
+    // Used to initiate the chatlogging!
+    //console.log("OK, we're trying to send a message");
+
+    if(chatHistory.length <= 2)
+    {
+      // Only triggers when initiating the convo
+      //console.log(userInfo.current.token);
+      try {
+        //console.log(`Current user id: ${userInfo.current.id}`);
 
       const res = await LogsApi.createChat({
         user_id: userInfo.current.id,
@@ -220,7 +223,7 @@ const sendMessage = async () => {
         dateTime: ""
       }, userInfo.current.token);
 
-      console.log(`Alright, started new chat on ${res.chat_id}`);
+      //console.log(`Alright, started new chat on ${res.chat_id}`);
       chatIdRef.current = res.chat_id;
 
       try {
@@ -289,9 +292,16 @@ const sendMessage = async () => {
           ...prevChatHistory,
           { type: 'response', text: botResponse, bot: true }
         ]);
-
+        //console.log("So were logging this message as the bot isnt disabled yet!");
+  
         logMessage({ id: userInfo.current.id, username: "shelson", email: "shelson@gmail.com" }, "Customer", message);
         logMessage({ id: botId, username: "BOT", email: "BOT" }, "BOT", botResponse);
+        
+        }
+        else
+        {
+          //console.log("Oh so now the bot has been disabled which means we are NOT logging messages atm.");
+          logMessage({id: userInfo.current.id, username:"shelson", email: "shelson@gmail.com"}, "Customer", message);
       }
 
       // Update chat directly
