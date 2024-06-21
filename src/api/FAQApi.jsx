@@ -38,12 +38,17 @@ const FAQApi = {
         return await response.json();
     },
     getFailedQuestions: async () => {
-        const response = await fetch('http://localhost:8080/faqs/failedQuestions');
-        return await response.json();
+        // Made some changes here to fix something - Shelson
+        const response = await axios.get('http://localhost:8080/faqs/failedQuestions', {headers: {
+            'Authorization': `Bearer ${TokenManager.getAccessToken()}`
+        }}).then(resp => resp.data);
+        return await response;
     },
     getRoutedChats: async () => {
-        const response = await fetch('http://localhost:8080/faqs/routedChats');
-        return await response.json();
+        const response = await axios.get('http://localhost:8080/faqs/routedChats', {headers: {
+            'Authorization': `Bearer ${TokenManager.getAccessToken()}`
+        }}).then(resp => resp.data);
+        return await response;
     },
     getChatsWithoutHuman: async () => {
         const response = await fetch('http://localhost:8080/faqs/chatsWithoutHuman');

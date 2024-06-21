@@ -55,7 +55,7 @@ export default function Chatwindow({displayChat, chatId, userInfo, refreshList})
                 
 
                 fetchChat();
-                //console.log(`Private message: ${data.body}`);
+                console.log(`Private message: ${data.body}`);
             });
         };
 
@@ -93,8 +93,8 @@ export default function Chatwindow({displayChat, chatId, userInfo, refreshList})
 
         if(stompClient != null)
         {
-
-            let payload = {"chatId": chatId, "message":liveMsg, "user_id": userInfo.id, "role": "Customer_Service", disableBot: true};
+            console.log(userInfo);
+            let payload = {"chatId": chatId, "message":liveMsg, "user_id": userInfo.id, "role": [`${userInfo.role}`], disableBot: true};
 
             /// Public messaging (maybe for later)
             // stompClient.publish({

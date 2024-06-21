@@ -14,6 +14,11 @@ export default function NavBar() {
             id: 2,
             path: "/logs",
             text: "Logs"
+        },
+        {
+            id: 3,
+            path:"/statistics", 
+            text: "statistics"
         }
     ];
 

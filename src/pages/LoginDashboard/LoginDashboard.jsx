@@ -1,13 +1,17 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import style from './styling/LoginDash.module.css';
 import AuthAPI from '../../api/AuthAPI';
 import TokenManager from '../../api/TokenManager';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 
 export default function LoginDashboard({handleLogin}) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [claims, setClaims] = useState(TokenManager.getClaims());
+    const delay = ms => new Promise(res => setTimeout(res, ms));
+
+
     const navigate = useNavigate();
 
     const handleSubmit = (e) => {
@@ -17,9 +21,9 @@ export default function LoginDashboard({handleLogin}) {
         {   
             handleLogin(username, password);
 
-            AuthAPI.login(username, password)
+            AuthAPI.dashLogin(username, password)
             .then(data => {
-                navigate("/logs");
+                navigate("/home");
             })
 
             //handleLogin(username, password);
@@ -33,7 +37,17 @@ export default function LoginDashboard({handleLogin}) {
             setUsername("");
             setPassword("");
         }
+
     }
+
+    // useEffect(() => {
+    //     console.log("Checks if claims is set or not");
+    //     if(claims)
+    //     {
+    //         console.log("Claims is valid so we're navigating");
+    //         navigate("/home");
+    //     }
+    // }, [claims, navigate]);
 
     return (
     <div className={style.main}>
@@ -58,6 +72,7 @@ export default function LoginDashboard({handleLogin}) {
                 </div>
 
                 <input type="submit" value={"Login"} className={style.loginbtn} onClick={handleSubmit}/>
+                <a href='/logs'>xxx</a>
             </form>
         </div>
     </div>
